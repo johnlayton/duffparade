@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Usage: kube machine-file-write <file> <machine>
+
+set -e
+[ -n "$KUBE_DEBUG" ] && set -x
+
+KUBE_MACHINE_FILE="$1"
+KUBE_MACHINE="$2"
+
+if [ -z "$KUBE_MACHINE" ] || [ -z "$KUBE_MACHINE_FILE" ]; then
+  kube-help --usage machine-file-write >&2
+  exit 1
+fi
+
+# Make sure the specified machine is installed.
+#kube-prefix "$KUBE_MACHINE" >/dev/null
+
+# Write the machine out to disk.
+echo "$KUBE_MACHINE" > "$KUBE_MACHINE_FILE"

@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Summary: Destroy a existing minike machine
+
+set -e
+[ -n "$KUBE_DEBUG" ] && set -x
+
+KUBE_MACHINE="$1"
+
+if [ -z "$KUBE_MACHINE" ]; then
+  KUBE_MACHINE="$(kube-machine-name)"
+fi
+
+if [ -z "$KUBE_MACHINE" ] || [ "$KUBE_MACHINE" = "system" ]; then
+  echo "no machine specified"
+  exit
+fi
+
+machine_stopped() {
+  local machine="$1"
+  local running="$(minikube --profile ${machine} status --format "{{.MinikubeStatus}}" 2>&1)"
+  [ "${running}" == "Stopped" ]
+}
+
+machine_running() {
+  local machine="$1"
+  local running="$(minikube --profile ${machine} status --format "{{.MinikubeStatus}}" 2>&1)"
+  [ "${running}" == "Running" ]
+}
+
+machine_destroy() {
+  local machine="$1"
+  minikube delete \
+      --profile ${machine} \
+      2>&1
+}
+
+if machine_running "$KUBE_MACHINE"; then
+    if machine_destroy "$KUBE_MACHINE"; then
+        echo "kube: destroy \`$KUBE_MACHINE' destroyed" >&2
+        exit 0
+    else
+        echo "kube: destroy \`$KUBE_MACHINE' not destroyed" >&2
+        exit 1
+    fi
+elif machine_stopped "$KUBE_MACHINE"; then
+    if machine_destroy "$KUBE_MACHINE"; then
+        echo "kube: destroy \`$KUBE_MACHINE' destroyed" >&2
+        exit 0
+    else
+        echo "kube: destroy \`$KUBE_MACHINE' not destroyed" >&2
+        exit 1
+    fi
+else
+    echo "kube: destroy \`$KUBE_MACHINE' does not exist" >&2
+    exit 0
+fi

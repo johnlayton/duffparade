@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Summary: Show the current minikube machine and its origin
+#
+# Shows the currently selected minikube machine and how it was
+# selected. To obtain only the version string, use `kube machine-name'.
+
+set -e
+[ -n "$KUBE_DEBUG" ] && set -x
+
+echo "$(kube-machine-name) (set by $(kube-machine-origin))"

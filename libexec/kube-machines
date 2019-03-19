@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# Summary: List all minikube machines available to kube
+# Usage: kube versions [--bare]
+#
+# Lists all minikube machines found in `$KUBE_ROOT/machines/*'.
+#
+# Lists all minikube machines found with minikube-machine ls
+
+set -e
+[ -n "$KUBE_DEBUG" ] && set -x
+
+if [ "$1" = "--bare" ]; then
+  hit_prefix=""
+  inst_prefix=""
+  miss_prefix=""
+  run_prefix=""
+  current_machine=""
+  include_system=""
+else
+  hit_prefix="* "
+  inst_prefix="+ "
+  miss_prefix="  "
+  run_prefix=""
+  current_machine="$(kube-machine-name || true)"
+  include_system="1"
+fi
+
+#bold=$(tput bold)
+#underline=$(tput sgr 0 1)
+#reset=$(tput sgr0)
+
+#purple=$(tput setaf 171)
+#red=$(tput setaf 1)
+#green=$(tput setaf 76)
+#tan=$(tput setaf 3)
+#blue=$(tput setaf 38)
+
+#success() {
+#  printf "${green}✔ %s${reset}\n" "$@"
+#}
+#error() {
+#  printf "${red}✖ %s${reset}\n" "$@"
+#}
+#warning() {
+#  printf "${tan}➜ %s${reset}\n" "$@"
+#}
+
+print_machine() {
+  if [ "$1" == "$current_machine" ]; then
+    echo "${hit_prefix}${inst_prefix}$(kube-machine 2>/dev/null) $1"
+  elif [[ -d  "${KUBE_ROOT}/machines/$1" ]]; then
+    echo "${miss_prefix}${inst_prefix}$1"
+  else
+    echo "${miss_prefix}${miss_prefix}$1"
+  fi
+}
+
+for path in "${KUBE_ROOT}/machines"/*; do
+  if [ -d "$path" ]; then
+#    if [ -n "$skip_aliases" ] && [ -L "$path" ]; then
+#      target="$(realpath "$path")"
+#      [ "${target%/*}" != "$versions_dir" ] || continue
+#    fi
+    print_machine "${path##*/}"
+  fi
+done
+
+# Include "system" in the non-bare output, if it exists
+#if [ -n "$include_system" ] && KUBE_MACHINE=system kube-which node >/dev/null 2>&1; then
+#  print_machine system
+#fi
+
+#for path in `curl -s -X GET https://semver.io/node/machines`; do
+# print_machine "node-${path##*/}"
+#done
+#
+#for path in `curl -s -X GET https://semver.io/iojs/machines`; do
+# print_machine "iojs-${path##*/}"
+#done

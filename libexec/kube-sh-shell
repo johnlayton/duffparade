@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+#
+# Summary: Set or show the shell-specific minikube machine
+#
+# Usage: kube shell <machine>
+#        kube shell --unset
+#
+# Sets a shell-specific minikube machine by setting the `KUBE_MACHINE'
+# environment variable in your shell. This machine overrides local
+# application-specific machines and the global macine.
+#
+# <machine> should be a string matching an installed minikube machine known to kube.
+# The special machine string `system' will use your default machine.
+# Run `kube machine' for a list of available Node machines.
+
+set -e
+[ -n "$KUBE_DEBUG" ] && set -x
+
+# Provide kube completions
+if [ "$1" = "--complete" ]; then
+  echo --unset
+  echo system
+  exec kube-machines --bare
+fi
+
+machine="$1"
+
+if [ -z "$machine" ]; then
+  if [ -z "$KUBE_MACHINE" ]; then
+    echo "kube: no shell-specific machine configured" >&2
+    exit 1
+  else
+    echo "echo \"\$KUBE_MACHINE\""
+    exit
+  fi
+fi
+
+if [ "$machine" = "--unset" ]; then
+  echo "unset KUBE_MACHINE"
+  exit
+fi
+
+# Make sure the specified machine is installed.
+if kube-prefix "$machine" >/dev/null; then
+  echo "export KUBE_MACHINE=\"${machine}\""
+else
+  echo "return 1"
+  exit 1
+fi

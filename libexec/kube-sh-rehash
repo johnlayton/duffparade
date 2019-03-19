@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e
+[ -n "$KUBE_DEBUG" ] && set -x
+
+# Provide kube completions
+if [ "$1" = "--complete" ]; then
+  exec kube-rehash --complete
+fi
+
+# When kube shell integration is enabled, delegate to kube-rehash,
+# then tell the shell to empty its command lookup cache.
+kube-rehash
+echo "hash -r"

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#
+# Summary: Set or show the local directory specific minikube machine
+#
+# Usage: kube local <version>
+#        kube local --unset
+#
+# Sets the local application-specific minikube machine by writing the
+# version name to a file named `.kube-machine'.
+#
+
+set -e
+[ -n "$KUBE_DEBUG" ] && set -x
+
+# Provide kube completions
+if [ "$1" = "--complete" ]; then
+  echo --unset
+  echo system
+  exec kube-versions --bare
+fi
+
+KUBE_MACHINE="$1"
+
+if [ "$KUBE_MACHINE" = "--unset" ]; then
+  rm -f .dmemv-machine
+elif [ -n "$KUBE_MACHINE" ]; then
+#  if [ "$(KUBE_MACHINE= kube-machine-origin)" -ef .dmemv-machine ]; then
+#    rm -f .dmemv-machine
+#    { echo "kube: removed existing \`.node-version' file and migrated"
+#      echo "       local version specification to \`.kube-version' file"
+#    } >&2
+#  fi
+  kube-machine-file-write .kube-machine "$KUBE_MACHINE"
+else
+  kube-version-file-read .kube-machine ||
+  { echo "kube: no local machine configured for this directory"
+    exit 1
+  } >&2
+fi
