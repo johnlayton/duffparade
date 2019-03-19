@@ -15,22 +15,18 @@ if [ -z "$KUBE_MACHINE" ] || [ "$KUBE_MACHINE" = "system" ]; then
   exit
 fi
 
-machine_active() {
-  local status="$(minikube status --format '{{.MinikubeStatus}}')"
-  [ "Running" == "${status}" ]
+machine_running() {
+  local machine="$1"
+  local running="$(minikube --profile ${machine} status --format "{{.MinikubeStatus}}" 2>&1)"
+  [ "${running}" == "Running" ]
 }
 
-if machine_active "$KUBE_MACHINE"; then
-    echo "kube: activate \`$KUBE_MACHINE' already active" >&2
+if machine_running "$KUBE_MACHINE"; then
+    echo "minikube profile ${KUBE_MACHINE}"
+    minikube --profile "${KUBE_MACHINE}" docker-env
+    echo "kube: activate \`$KUBE_MACHINE' activated" >&2
     exit 0
 else
-    if kube-start "$KUBE_MACHINE"; then
-        minikube profile "$KUBE_MACHINE"
-        eval "$(minikube docker-env)"
-        echo "kube: activate \`$KUBE_MACHINE' activated" >&2
-        exit 0
-    else
-        echo "kube: activate \`$KUBE_MACHINE' not activated" >&2
-        exit 1
-    fi
+    echo "kube: activate \`$KUBE_MACHINE' not activated" >&2
+    exit 1
 fi

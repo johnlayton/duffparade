@@ -29,8 +29,9 @@ if machine_running "$KUBE_MACHINE"; then
     exit 0
 else
     if machine_start "$KUBE_MACHINE"; then
-        minikube profile "$KUBE_MACHINE
+        minikube profile $KUBE_MACHINE
         echo "kube: machine \`$KUBE_MACHINE' started" >&2
+        eval "$(minikube docker-env)"
         exit 0
     else
         echo "kube: machine \`$KUBE_MACHINE' is not started" >&2
