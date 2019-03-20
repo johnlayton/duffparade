@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Summary: Start the minikube machine by name
+# Summary: Start the minikube dashboard
 
 set -e
 [ -n "$KUBE_DEBUG" ] && set -x
@@ -19,21 +19,16 @@ machine_running() {
   [ "${running}" == "Running" ]
 }
 
-machine_start() {
+machine_start_dashboard() {
   local machine="$1"
-  minikube --profile ${machine} start
+  minikube --profile ${machine} dashboard
 }
 
 if machine_running "$KUBE_MACHINE"; then
+    machine_start_dashboard "$KUBE_MACHINE" &
     echo "kube: machine \`$KUBE_MACHINE' already running" >&2
     exit 0
 else
-    if machine_start "$KUBE_MACHINE"; then
-        minikube-machine regenerate-certs --force "$KUBE_MACHINE"
-        echo "kube: machine \`$KUBE_MACHINE' started" >&2
-        exit 0
-    else
-        echo "kube: machine \`$KUBE_MACHINE' is not started" >&2
-        exit 1
-    fi
+    echo "kube: machine \`$KUBE_MACHINE' is not running" >&2
+    exit 1
 fi
