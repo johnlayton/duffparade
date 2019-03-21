@@ -15,7 +15,7 @@ fi
 
 machine_running() {
   local machine="$1"
-  local running="$(minikube --profile ${machine} status --format "{{.MinikubeStatus}}" 2>&1)"
+  local running="$(minikube --profile ${machine} status --format "{{.Host}}" 2>&1)"
   [ "${running}" == "Running" ]
 }
 
@@ -25,8 +25,8 @@ machine_start_dashboard() {
 }
 
 if machine_running "$KUBE_MACHINE"; then
+    echo "kube: machine \`$KUBE_MACHINE' start dashboard" >&2
     machine_start_dashboard "$KUBE_MACHINE" &
-    echo "kube: machine \`$KUBE_MACHINE' already running" >&2
     exit 0
 else
     echo "kube: machine \`$KUBE_MACHINE' is not running" >&2
