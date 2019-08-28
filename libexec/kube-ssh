@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Summary: Start the minikube ssh
+
+set -e
+[ -n "$KUBE_DEBUG" ] && set -x
+
+if [ -z "$KUBE_MACHINE" ]; then
+  KUBE_MACHINE="$(kube-machine-name)"
+fi
+
+if [ -z "$KUBE_MACHINE" ] || [ "$KUBE_MACHINE" = "system" ]; then
+  echo "system"
+  exit
+fi
+
+machine_running() {
+  local machine="$1"
+  local running="$(minikube --profile ${machine} status --format "{{.Host}}" 2>&1)"
+  [ "${running}" == "Running" ]
+}
+
+machine_ssh() {
+  local machine="$1"
+  minikube --profile ${machine} ssh
+}
+
+if machine_running "$KUBE_MACHINE"; then
+    echo "kube: machine \`$KUBE_MACHINE' ssh >&2
+    machine_ssh "$KUBE_MACHINE" &
+    exit 0
+else
+    echo "kube: machine \`$KUBE_MACHINE' is not running" >&2
+    exit 1
+fi
