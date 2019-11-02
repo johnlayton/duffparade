@@ -13,7 +13,7 @@ if [ -z "$KENV_TYPE" ] || [ -z "$KENV_NAME" ]; then
   KENV_TYPE="${MY_ARRAY[0]}"
   KENV_NAME="${MY_ARRAY[1]}"
 else
-  KENV_CONFIG="$KENV_CONFIG-$KENV_NAME"
+  KENV_CONFIG="$KENV_TYPE-$KENV_NAME"
 fi
 
 if [ -z "$KENV_CONFIG" ] || [ "$KENV_CONFIG" = "system" ]; then
