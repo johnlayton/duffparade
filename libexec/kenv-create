@@ -21,10 +21,17 @@ if [ -z "$KENV_CONFIG" ] || [ "$KENV_CONFIG" = "system" ]; then
   exit
 fi
 
+create_kind() {
+  kind create cluster --name "${1}"
+  mkdir "${KENV_ROOT}/configs/${KENV_CONFIG}"
+  cp "${HOME}/.kube/kind-config-${1}" "${KENV_ROOT}/configs/${KENV_CONFIG}/config"
+}
+
 if [ $KENV_TYPE == "kind" ]
 then
-  kind create cluster --name $NAME --wait
-  echo "export KUBECONFIG=\"${KENV_ROOT}/configs/${KENV_CONFIG}/config\""
+  create_kind "${KENV_NAME}"
+  kenv-local "${KENV_CONFIG}"
+  eval "$(kenv activate)"
 elif [ $KENV_TYPE == "minikube" ]
 then
   echo "export KUBECONFIG=\"${KENV_ROOT}/configs/${KENV_CONFIG}/config\""

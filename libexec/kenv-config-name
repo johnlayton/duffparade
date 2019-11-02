@@ -9,8 +9,8 @@ if [ -z "$KENV_CONFIG" ]; then
   KENV_CONFIG="$(kenv-config-file-read "$KENV_CONFIG_FILE" || true)"
 fi
 
-if [ -z "$KENV_CONFIG" ] || [ "$KENV_CONFIG" = "default" ]; then
-  echo "default"
+if [ -z "$KENV_CONFIG" ] || [ "$KENV_CONFIG" = "system" ]; then
+  echo "system"
   exit
 fi
 

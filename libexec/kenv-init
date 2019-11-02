@@ -71,12 +71,28 @@ if [ -z "$print" ]; then
   exit 1
 fi
 
-mkdir -p "${KENV_ROOT}/configs"
+if [ ! -d "${KENV_ROOT}/configs" ]
+then
+  mkdir -p "${KENV_ROOT}/configs"
+  mkdir -p "${KENV_ROOT}/configs/default"
+  mkdir -p "${KENV_ROOT}/configs/global"
+fi
 
-if [ -d "$HOME/.kube" ] && [ -f "$HOME/.kube/config" ] && [ ! -f "${KENV_ROOT}/configs/default" ]
+if [ ! -d "${KENV_ROOT}/configs/default" ]
 then
   mkdir -p "${KENV_ROOT}/configs/default"
-  mv ~/.kube/config "${KENV_ROOT}"/configs/default/config
+fi
+
+if [ ! -d "${KENV_ROOT}/configs/global" ]
+then
+  mkdir -p "${KENV_ROOT}/configs/global"
+fi
+
+if [ -d "$HOME/.kube" ] && [ -f "$HOME/.kube/config" ]
+then
+  mkdir -p "${KENV_ROOT}/configs/default"
+  cp ~/.kube/config "${KENV_ROOT}"/configs/default/config
+  cp ~/.kube/config "${KENV_ROOT}"/configs/global/config
 fi
 
 case "$shell" in

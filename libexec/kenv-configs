@@ -31,6 +31,10 @@ print_config() {
   fi
 }
 
+if [ -n "$include_system" ]; then
+  print_config system
+fi
+
 for path in "${KENV_ROOT}/configs"/*; do
   if [ -d "$path" ]; then
     print_config "${path##*/}"

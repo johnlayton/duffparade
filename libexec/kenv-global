@@ -16,15 +16,18 @@ if [ "$1" = "--complete" ]; then
 fi
 
 KENV_CONFIG="$1"
-KENV_CONFIG_FILE="${JKENV_ROOT}/config"
+KENV_CONFIG_FILE="${KENV_ROOT}/config"
 
 if [ -n "$KENV_CONFIG" ]; then
   kenv-config-file-write "$KENV_CONFIG_FILE" "$KENV_CONFIG"
-  ln -s ""
+  ln -s "${KENV_ROOT}/configs/${KENV_CONFIG}/config" "${HOME}/.kube/config"
 else
   kenv-config-file-read "$KENV_CONFIG_FILE" ||
   kenv-config-file-read "${KENV_ROOT}/global" ||
   kenv-config-file-read "${KENV_ROOT}/default" ||
   echo system
+#  { echo "kenv: no global configured"
+#    exit 1
+#  } >&2
 fi
 
