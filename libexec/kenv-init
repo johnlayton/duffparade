@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Summary: Configure the shell environment for kube
-# Usage: eval "$(kube init - [--no-rehash] [<shell>])"
+# Summary: Configure the shell environment for kenv
+# Usage: eval "$(kenv init - [--no-rehash] [<shell>])"
 
 set -e
-[ -n "$KUBE_DEBUG" ] && set -x
+[ -n "$KENV_DEBUG" ] && set -x
 
 print=""
 no_rehash=""
@@ -61,36 +61,38 @@ if [ -z "$print" ]; then
     ;;
   esac
 
-  { echo "# Load kube automatically by adding"
+  { echo "# Load kenv automatically by adding"
     echo "# the following to ${profile}:"
     echo
-    echo 'eval "$(kube init -)"'
+    echo 'eval "$(kenv init -)"'
     echo
   } >&2
 
   exit 1
 fi
 
-mkdir -p "${KUBE_ROOT}/"{shims,versions}
+mkdir -p "${KENV_ROOT}/configs"
 
-ln -s -f "$HOME/.minikube/machines" "${KUBE_ROOT}"
-
-echo 'export PATH="'${KUBE_ROOT}'/shims:${PATH}"'
+if [ -d "$HOME/.kube" ] && [ -f "$HOME/.kube/config" ] && [ ! -f "${KENV_ROOT}/configs/default" ]
+then
+  mkdir -p "${KENV_ROOT}/configs/default"
+  mv ~/.kube/config "${KENV_ROOT}"/configs/default/config
+fi
 
 case "$shell" in
 bash | zsh )
-  echo "source \"$root/completions/kube.${shell}\""
+  echo "source \"$root/completions/kenv.${shell}\""
   ;;
 esac
 
 if [ -z "$no_rehash" ]; then
-  echo 'kube rehash 2>/dev/null'
+  echo 'kenv rehash 2>/dev/null'
 fi
 
-commands=(`kube-commands --sh`)
+commands=(`kenv-commands --sh`)
 IFS="|"
 cat <<EOS
-kube() {
+kenv() {
   typeset command
   command="\$1"
   if [ "\$#" -gt 0 ]; then
@@ -99,9 +101,9 @@ kube() {
 
   case "\$command" in
   ${commands[*]})
-    eval \`kube "sh-\$command" "\$@"\`;;
+    eval \`kenv "sh-\$command" "\$@"\`;;
   *)
-    command kube "\$command" "\$@";;
+    command kenv "\$command" "\$@";;
   esac
 }
 EOS

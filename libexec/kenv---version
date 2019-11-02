@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Summary: Display the version of kube
+# Summary: Display the version of kenv
 #
-# Displays the version number of this kube release, including the
+# Displays the version number of this kenv release, including the
 # current revision from git, if available.
 #
 # The format of the git revision is:
@@ -10,12 +10,12 @@
 # tagged.
 
 set -e
-[ -n "$KUBE_DEBUG" ] && set -x
+[ -n "$KENV_DEBUG" ] && set -x
 
 VERSION="0.0.0"
 
-cd "$KUBE_ROOT"
+cd "$KENV_ROOT"
 git_revision="$(git describe --tags HEAD 2>/dev/null || true)"
 git_revision="${git_revision#v}"
 
-echo "kube ${git_revision:-$VERSION}"
+echo "kenv ${git_revision:-$VERSION}"

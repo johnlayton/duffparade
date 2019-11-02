@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Summary: Start the minikenv machine by name
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+if [ -z "$KENV_MACHINE" ]; then
+  KENV_MACHINE="$(kenv-machine-name)"
+fi
+
+if [ -z "$KENV_MACHINE" ] || [ "$KENV_MACHINE" = "system" ]; then
+  echo "system"
+  exit
+fi
+
+machine_running() {
+  local machine="$1"
+  local running="$(minikenv --profile ${machine} status --format "{{.Host}}" 2>&1)"
+  [ "${running}" == "Running" ]
+}
+
+machine_start() {
+  local machine="$1"
+  minikenv --profile ${machine} start
+}
+
+if machine_running "$KENV_MACHINE"; then
+    echo "kenv: machine \`$KENV_MACHINE' already running" >&2
+    exit 0
+else
+    if machine_start "$KENV_MACHINE"; then
+        minikenv profile $KENV_MACHINE
+        echo "kenv: machine \`$KENV_MACHINE' started" >&2
+        eval "$(minikenv docker-env)"
+        exit 0
+    else
+        echo "kenv: machine \`$KENV_MACHINE' is not started" >&2
+        exit 1
+    fi
+fi

@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+#
+# Summary: Set or show the shell-specific kube config
+#
+# Usage: kenv shell <config>
+#        kenv shell --unset
+#
+# Sets a shell-specific minikenv config by setting the `KENV_CONFIG'
+# environment variable in your shell. This config overrides local
+# application-specific configs and the global macine.
+#
+# <config> should be a string matching an installed minikenv config known to kenv.
+# The special config string `system' will use your default config.
+# Run `kenv config' for a list of available Node configs.
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+# Provide kenv completions
+if [ "$1" = "--complete" ]; then
+  echo --unset
+  echo system
+  exec kenv-configs --bare
+fi
+
+config="$1"
+
+if [ -z "$config" ]; then
+  if [ -z "$KENV_CONFIG" ]; then
+    echo "kenv: no shell-specific config configured" >&2
+    exit 1
+  else
+    echo "echo \"\$KENV_CONFIG\""
+    exit
+  fi
+fi
+
+if [ "$config" = "--unset" ]; then
+  echo "unset KENV_CONFIG"
+  exit
+fi
+
+# Make sure the specified config is installed.
+if kenv-prefix "$config" >/dev/null; then
+  echo "export KENV_CONFIG=\"${config}\""
+else
+  echo "return 1"
+  exit 1
+fi

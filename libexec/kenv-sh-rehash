@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+# Provide kenv completions
+if [ "$1" = "--complete" ]; then
+  exec kenv-rehash --complete
+fi
+
+# When kenv shell integration is enabled, delegate to kenv-rehash,
+# then tell the shell to empty its command lookup cache.
+kenv-rehash
+echo "hash -r"

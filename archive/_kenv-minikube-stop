@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Summary: Stop the minikenv machine by name
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+if [ -z "$KENV_MACHINE" ]; then
+  KENV_MACHINE="$(kenv-machine-name)"
+fi
+
+if [ -z "$KENV_MACHINE" ] || [ "$KENV_MACHINE" = "system" ]; then
+  echo "system"
+  exit
+fi
+
+machine_stopped() {
+  local machine="$1"
+  local running="$(minikenv --profile ${machine} status --format "{{.Host}}" 2>&1)"
+  [ "${running}" == "Stopped" ]
+}
+
+machine_stop() {
+  local machine="$1"
+  minikenv --profile ${machine} stop
+}
+
+if machine_stopped "$KENV_MACHINE"; then
+    echo "kenv: machine \`$KENV_MACHINE' not running" >&2
+    exit 0
+else
+    if machine_stop "$KENV_MACHINE"; then
+        echo "kenv: machine \`$KENV_MACHINE' stopped" >&2
+        exit 0
+    else
+        echo "kenv: machine \`$KENV_MACHINE' not stopped" >&2
+        exit 1
+    fi
+fi

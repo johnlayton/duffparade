@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Summary: Show the current kube config name
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+if [ -z "$KENV_CONFIG" ]; then
+  KENV_CONFIG_FILE="$(kenv-config-file)"
+  KENV_CONFIG="$(kenv-config-file-read "$KENV_CONFIG_FILE" || true)"
+fi
+
+if [ -z "$KENV_CONFIG" ] || [ "$KENV_CONFIG" = "default" ]; then
+  echo "default"
+  exit
+fi
+
+echo "$KENV_CONFIG"

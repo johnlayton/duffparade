@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Summary: Create a new kubernetes in docker
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+KENV_TYPE="$1"
+KENV_NAME="$2"
+
+if [ -z "$KENV_TYPE" ] || [ -z "$KENV_NAME" ]; then
+  KENV_CONFIG="$(kenv-config-name)"
+  IFS='-' read -ra MY_ARRAY <<< "$KENV_CONFIG"
+  KENV_TYPE="${MY_ARRAY[0]}"
+  KENV_NAME="${MY_ARRAY[1]}"
+else
+  KENV_CONFIG="$KENV_CONFIG-$KENV_NAME"
+fi
+
+if [ -z "$KENV_CONFIG" ] || [ "$KENV_CONFIG" = "system" ]; then
+  echo "no config specified"
+  exit
+fi
+
+if [ $KENV_TYPE == "kind" ]
+then
+  kind create cluster --name $NAME --wait
+  echo "export KUBECONFIG=\"${KENV_ROOT}/configs/${KENV_CONFIG}/config\""
+elif [ $KENV_TYPE == "minikube" ]
+then
+  echo "export KUBECONFIG=\"${KENV_ROOT}/configs/${KENV_CONFIG}/config\""
+else
+  echo "export KUBECONFIG=\"${KENV_ROOT}/configs/default/config\""
+fi
+
+#
+# [ -d "${JSENV_ROOT}/versions/$KENV_TYPE-$KENV_NAME" ] && echo "$KENV_TYPE-$KENV_NAME is already configured." && return
+#
+#kind_create() {
+#  local $NAME="$1"
+#  kind create cluster --name $NAME --wait
+#}
+#
+#if kind_config "$KENV_CONFIG"; then
+#    echo "kenv: kind create \`$KENV_CONFIG' already exists" >&2
+#    exit 0
+#else
+#    if kind_create "$KENV_CONFIG"; then
+#        $(kenv-config-file-write .kenv-config "$KENV_CONFIG")
+#        minikenv profile $KENV_CONFIG
+#        eval "$(minikenv docker-env)"
+#        echo "kenv: create \`$KENV_CONFIG' created" >&2
+#        exit 0
+#    else
+#        echo "kenv: create \`$KENV_CONFIG' not created" >&2
+#        exit 1
+#    fi
+#fi

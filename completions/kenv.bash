@@ -5,14 +5,14 @@ _kube() {
   local word="${COMP_WORDS[COMP_CWORD]}"
 
   if [ "$COMP_CWORD" -eq 1 ]; then
-    COMPREPLY=( $(compgen -W "$(kube commands)" -- "$word") )
+    COMPREPLY=( $(compgen -W "$(kenv commands)" -- "$word") )
   else
     local words=("${COMP_WORDS[@]}")
     unset words[0]
     unset words[$COMP_CWORD]
-    local completions=$(kube completions "${words[@]}")
+    local completions=$(kenv completions "${words[@]}")
     COMPREPLY=( $(compgen -W "$completions" -- "$word") )
   fi
 }
 
-complete -F _kube kube
+complete -F _kube kenv

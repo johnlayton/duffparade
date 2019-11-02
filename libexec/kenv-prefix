@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Summary: Display prefix for a kube config
+# Usage: kenv prefix [<config>]
+#
+# Displays the directory where a kube config is installed. If no
+# config is given, `kenv prefix' displays the location of the
+# currently selected config.
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+# Provide kenv completions
+if [ "$1" = "--complete" ]; then
+  echo system
+  exec kenv-configs --bare
+fi
+
+if [ -n "$1" ]; then
+  export KENV_CONFIG="$1"
+elif [ -z "$KENV_CONFIG" ]; then
+  KENV_CONFIG="$(kenv-config-name)"
+fi
+
+#if [ "$KENV_CONFIG" = "system" ]; then
+#  NODE_PATH="$(kenv-which node)"
+#  NODE_PATH="${NODE_PATH%/*}"
+#  echo "${NODE_PATH%/bin}"
+#  exit
+#fi
+
+KENV_PREFIX_PATH="${KENV_ROOT}/configs/${KENV_CONFIG}"
+if [ ! -d "$KENV_PREFIX_PATH" ]; then
+  echo "kenv: config \`${KENV_CONFIG}' not installed" >&2
+  exit 1
+fi
+
+echo "$KENV_PREFIX_PATH"

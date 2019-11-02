@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Summary: Detect the file that sets the current kenv config
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+find_local_config_file() {
+  local root="$1"
+  while [ -n "$root" ]; do
+    if [ -e "${root}/.kenv-config" ]; then
+      echo "${root}/.kenv-config"
+      exit
+    fi
+    root="${root%/*}"
+  done
+}
+
+find_local_config_file "$KENV_DIR"
+[ "$KENV_DIR" = "$PWD" ] || find_local_config_file "$PWD"
+
+global_config_file="${KENV_ROOT}/config"
+
+if [ -e "$global_config_file" ]; then
+  echo "$global_config_file"
+elif [ -e "${KENV_ROOT}/global" ]; then
+  echo "${KENV_ROOT}/global"
+elif [ -e "${KENV_ROOT}/default" ]; then
+  echo "${KENV_ROOT}/default"
+else
+  echo "$global_config_file"
+fi

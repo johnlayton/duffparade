@@ -2,16 +2,16 @@ if [[ ! -o interactive ]]; then
     return
 fi
 
-compctl -K _kube kube
+compctl -K _kenv kenv
 
-_kube() {
+_kenv() {
   local words completions
   read -cA words
 
   if [ "${#words}" -eq 2 ]; then
-    completions="$(kube commands)"
+    completions="$(kenv commands)"
   else
-    completions="$(kube completions ${words[2,-1]})"
+    completions="$(kenv completions ${words[2,-1]})"
   fi
 
   reply=("${(ps:\n:)completions}")
