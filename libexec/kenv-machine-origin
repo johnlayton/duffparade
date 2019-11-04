@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Summary: Explain how the current kube machine is set
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+if [ -n "$KENV_MACHINE" ]; then
+  echo "KENV_MACHINE environment variable"
+else
+  kenv-machine-file
+fi

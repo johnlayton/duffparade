@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Summary: Configure the shell environment for kenv
+# Summary: Machineure the shell environment for kenv
 # Usage: eval "$(kenv init - [--no-rehash] [<shell>])"
 
 set -e
@@ -71,28 +71,21 @@ if [ -z "$print" ]; then
   exit 1
 fi
 
-if [ ! -d "${KENV_ROOT}/configs" ]
+if [ ! -d "${KENV_ROOT}/machines" ]
 then
-  mkdir -p "${KENV_ROOT}/configs"
-  mkdir -p "${KENV_ROOT}/configs/default"
-  mkdir -p "${KENV_ROOT}/configs/global"
+  mkdir -p "${KENV_ROOT}/machines"
+  mkdir -p "${KENV_ROOT}/machines/original"
 fi
 
-if [ ! -d "${KENV_ROOT}/configs/default" ]
+if [ ! -d "${KENV_ROOT}/machines/original" ]
 then
-  mkdir -p "${KENV_ROOT}/configs/default"
-fi
-
-if [ ! -d "${KENV_ROOT}/configs/global" ]
-then
-  mkdir -p "${KENV_ROOT}/configs/global"
+  mkdir -p "${KENV_ROOT}/machines/original"
 fi
 
 if [ -d "$HOME/.kube" ] && [ -f "$HOME/.kube/config" ]
 then
-  mkdir -p "${KENV_ROOT}/configs/default"
-  cp ~/.kube/config "${KENV_ROOT}"/configs/default/config
-  cp ~/.kube/config "${KENV_ROOT}"/configs/global/config
+  cp ~/.kube/config "${KENV_ROOT}"/machines/original/config
+  echo "system-original" > "${KENV_ROOT}/.kenv-machine"
 fi
 
 case "$shell" in

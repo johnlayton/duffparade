@@ -1,34 +1,21 @@
 #!/usr/bin/env bash
-# Summary: Create a new minikenv config
+# Summary: Create a new minikenv machine
 
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
-KENV_CONFIG="$1"
+KENV_MACHINE="$1"
 
-if [ -z "$KENV_CONFIG" ]; then
-  KENV_CONFIG="$(kenv-config-name)"
+if [ -z "$KENV_MACHINE" ]; then
+  KENV_MACHINE="$(kenv-machine-desc)"
 fi
 
-if [ -z "$KENV_CONFIG" ] || [ "$KENV_CONFIG" = "system" ]; then
-  echo "no config specified"
+if [ -z "$KENV_MACHINE" ]
+then
+  echo "no machine specified"
   exit
 fi
 
-#IFS='-' read -ra MY_ARRAY <<< "$KENV_CONFIG"
-#KENV_TYPE="${MY_ARRAY[0]}"
-#KENV_NAME="${MY_ARRAY[1]}"
-#
-#if [ $KENV_TYPE == "kind" ]
-#then
-#  echo "export KUBECONFIG=\"${KENV_ROOT}/configs/${KENV_CONFIG}/config\""
-#elif [ $KENV_TYPE == "minikube" ]
-#then
-#  echo "export KUBECONFIG=\"${KENV_ROOT}/configs/${KENV_CONFIG}/config\""
-#else
-#  echo "export KUBECONFIG=\"${KENV_ROOT}/configs/${KENV_CONFIG}/config\""
-#fi
-
-echo "export KUBECONFIG=\"${KENV_ROOT}/configs/${KENV_CONFIG}/config\""
+echo "export KUBECONFIG=\"${KENV_ROOT}/machines/${KENV_MACHINE}/config\""
 
 

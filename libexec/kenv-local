@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
-# Summary: Set or show the local directory specific kube config
+# Summary: Set or show the local directory specific kube machine
 #
 # Usage: kenv local <version>
 #        kenv local --unset
 #
-# Sets the local application-specific minikenv config by writing the
-# version name to a file named `.kenv-config'.
+# Sets the local directory specific kube machine by writing the
+# version name to a file named `.kenv-machine'.
 #
 
 set -e
@@ -15,19 +15,18 @@ set -e
 # Provide kenv completions
 if [ "$1" = "--complete" ]; then
   echo --unset
-  echo system
-  exec kenv-configs --bare
+  exec kenv-machines --bare
 fi
 
-KENV_CONFIG="$1"
+KENV_MACHINE="$1"
 
-if [ "$KENV_CONFIG" = "--unset" ]; then
-  rm -f .kenv-config
-elif [ -n "$KENV_CONFIG" ]; then
-  kenv-config-file-write .kenv-config "$KENV_CONFIG"
+if [ "$KENV_MACHINE" = "--unset" ]; then
+  rm -f .kenv-machine
+elif [ -n "$KENV_MACHINE" ]; then
+  kenv-machine-file-write .kenv-machine "$KENV_MACHINE"
 else
-  kenv-config-file-read .kenv-config ||
-  { echo "kenv: no local config configured for this directory"
+  kenv-machine-file-read .kenv-machine ||
+  { echo "kenv: no local machine configured for this directory"
     exit 1
   } >&2
 fi

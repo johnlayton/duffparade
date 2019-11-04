@@ -4,61 +4,31 @@
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
+export KUBECONFIG=
+
 KENV_TYPE="$1"
 KENV_NAME="$2"
 
+if [ -z "$KENV_MACHINE" ]; then
+  KENV_MACHINE_FILE="$(kenv-machine-file)"
+  KENV_MACHINE="$(kenv-machine-file-read "$KENV_MACHINE_FILE" || true)"
+fi
+
 if [ -z "$KENV_TYPE" ] || [ -z "$KENV_NAME" ]; then
-  KENV_CONFIG="$(kenv-config-name)"
-  IFS='-' read -ra MY_ARRAY <<< "$KENV_CONFIG"
-  KENV_TYPE="${MY_ARRAY[0]}"
-  KENV_NAME="${MY_ARRAY[1]}"
-else
-  KENV_CONFIG="$KENV_TYPE-$KENV_NAME"
+  KENV_TYPE="$(kenv-machine-type)"
+  KENV_NAME="$(kenv-machine-name)"
 fi
-
-if [ -z "$KENV_CONFIG" ] || [ "$KENV_CONFIG" = "system" ]; then
-  echo "no config specified"
-  exit
-fi
-
-create_kind() {
-  kind create cluster --name "${1}"
-  mkdir "${KENV_ROOT}/configs/${KENV_CONFIG}"
-  cp "${HOME}/.kube/kind-config-${1}" "${KENV_ROOT}/configs/${KENV_CONFIG}/config"
-}
 
 if [ $KENV_TYPE == "kind" ]
 then
-  create_kind "${KENV_NAME}"
-  kenv-local "${KENV_CONFIG}"
-  eval "$(kenv activate)"
+  echo "kenv: kind create"
+  kenv-kind-create "${KENV_NAME}"
 elif [ $KENV_TYPE == "minikube" ]
 then
-  echo "export KUBECONFIG=\"${KENV_ROOT}/configs/${KENV_CONFIG}/config\""
+  echo "kenv: minikube create"
+  kenv-minikube-create "${KENV_NAME}"
 else
-  echo "export KUBECONFIG=\"${KENV_ROOT}/configs/default/config\""
+  { echo "kenv: unknown type"
+    exit 1
+  } >&2
 fi
-
-#
-# [ -d "${JSENV_ROOT}/versions/$KENV_TYPE-$KENV_NAME" ] && echo "$KENV_TYPE-$KENV_NAME is already configured." && return
-#
-#kind_create() {
-#  local $NAME="$1"
-#  kind create cluster --name $NAME --wait
-#}
-#
-#if kind_config "$KENV_CONFIG"; then
-#    echo "kenv: kind create \`$KENV_CONFIG' already exists" >&2
-#    exit 0
-#else
-#    if kind_create "$KENV_CONFIG"; then
-#        $(kenv-config-file-write .kenv-config "$KENV_CONFIG")
-#        minikenv profile $KENV_CONFIG
-#        eval "$(minikenv docker-env)"
-#        echo "kenv: create \`$KENV_CONFIG' created" >&2
-#        exit 0
-#    else
-#        echo "kenv: create \`$KENV_CONFIG' not created" >&2
-#        exit 1
-#    fi
-#fi

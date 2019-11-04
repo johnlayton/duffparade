@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Summary: List all kube machines available to kenv
+# Usage: kenv machines
+#
+# Lists all kube machines found in `$KENV_ROOT/machines/*'.
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+if [ "$1" = "--bare" ]; then
+  hit_prefix=""
+  inst_prefix=""
+  miss_prefix=""
+  current_machine=""
+else
+  hit_prefix="* "
+  inst_prefix="+ "
+  miss_prefix="  "
+  current_machine="$(kenv-machine-desc || true)"
+fi
+
+print_machine() {
+  if [ "$1" == "$current_machine" ]; then
+    echo "${hit_prefix}${inst_prefix}$(kenv-machine 2>/dev/null) $1"
+  elif [[ -d  "${KENV_ROOT}/machines/$1" ]]; then
+    echo "${miss_prefix}${inst_prefix}$1"
+  else
+    echo "${miss_prefix}${miss_prefix}$1"
+  fi
+}
+
+for path in "${KENV_ROOT}/machines"/*; do
+  if [ -d "$path" ]; then
+    print_machine "${path##*/}"
+  fi
+done

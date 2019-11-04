@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Summary: Create a new kind machine
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+KENV_MACHINE="$1"
+
+if [ -z "$KENV_MACHINE" ]; then
+  KENV_MACHINE="$(kenv-machine-desc)"
+fi
+
+if [ -z "$KENV_MACHINE" ] || [ "$KENV_MACHINE" = "system" ]; then
+  echo "no machine specified"
+  exit
+fi
+
+machine_running() {
+  [[ "$(docker container ls --format='{{json .Names}}' | jq)" =~ ${1}-control-plane ]]
+}
+
+machine_create() {
+  kind create cluster --name "${1}"
+}
+
+if machine_running "$KENV_MACHINE"; then
+    echo "kenv: kind create \`$KENV_MACHINE' already running" >&2
+    exit 0
+else
+    if machine_create "$KENV_MACHINE"; then
+        kenv-machine-file-write .kenv-machine kind-"$KENV_MACHINE"
+        mkdir "${KENV_ROOT}/machines/kind-${1}"
+        cp "${HOME}/.kube/kind-config-${1}" "${KENV_ROOT}/machines/kind-${1}/config"
+        echo "kenv: kind create \`$KENV_MACHINE' created" >&2
+        exit 0
+    else
+        echo "kenv: kind create \`$KENV_MACHINE' not created" >&2
+        exit 1
+    fi
+fi

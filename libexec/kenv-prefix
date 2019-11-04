@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
-# Summary: Display prefix for a kube config
-# Usage: kenv prefix [<config>]
+# Summary: Display prefix for a kenv machine
+# Usage: kenv prefix [<machine>]
 #
-# Displays the directory where a kube config is installed. If no
-# config is given, `kenv prefix' displays the location of the
-# currently selected config.
+# Displays the directory where a kenv machine is installed.
 
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
@@ -12,25 +10,18 @@ set -e
 # Provide kenv completions
 if [ "$1" = "--complete" ]; then
   echo system
-  exec kenv-configs --bare
+  exec kenv-machines --bare
 fi
 
 if [ -n "$1" ]; then
-  export KENV_CONFIG="$1"
-elif [ -z "$KENV_CONFIG" ]; then
-  KENV_CONFIG="$(kenv-config-name)"
+  export KENV_MACHINE="$1"
+elif [ -z "$KENV_MACHINE" ]; then
+  KENV_MACHINE="$(kenv-machine-desc)"
 fi
 
-#if [ "$KENV_CONFIG" = "system" ]; then
-#  NODE_PATH="$(kenv-which node)"
-#  NODE_PATH="${NODE_PATH%/*}"
-#  echo "${NODE_PATH%/bin}"
-#  exit
-#fi
-
-KENV_PREFIX_PATH="${KENV_ROOT}/configs/${KENV_CONFIG}"
+KENV_PREFIX_PATH="${KENV_ROOT}/machines/${KENV_MACHINE}"
 if [ ! -d "$KENV_PREFIX_PATH" ]; then
-  echo "kenv: config \`${KENV_CONFIG}' not installed" >&2
+  echo "kenv: machine \`${KENV_MACHINE}' not installed" >&2
   exit 1
 fi
 

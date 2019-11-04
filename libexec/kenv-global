@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Summary: Set or show the global kube config
+# Summary: Set or show the global kube machine
 #
-# Usage: kenv global <config>
+# Usage: kenv global <machine>
 #        kenv global --unset
 #
 
@@ -11,23 +11,19 @@ set -e
 
 # Provide kenv completions
 if [ "$1" = "--complete" ]; then
-  echo system
-  exec kenv-configs --bare
+  exec kenv-machines --bare
 fi
 
-KENV_CONFIG="$1"
-KENV_CONFIG_FILE="${KENV_ROOT}/config"
+KENV_MACHINE="$1"
+KENV_MACHINE_FILE="${KENV_ROOT}/.kenv-machine"
 
-if [ -n "$KENV_CONFIG" ]; then
-  kenv-config-file-write "$KENV_CONFIG_FILE" "$KENV_CONFIG"
-  ln -s "${KENV_ROOT}/configs/${KENV_CONFIG}/config" "${HOME}/.kube/config"
+if [ -n "$KENV_MACHINE" ]; then
+  kenv-machine-file-write "$KENV_MACHINE_FILE" "$KENV_MACHINE"
+  ln -svf "${KENV_ROOT}/machines/${KENV_MACHINE}/config" "${HOME}/.kube/config"
 else
-  kenv-config-file-read "$KENV_CONFIG_FILE" ||
-  kenv-config-file-read "${KENV_ROOT}/global" ||
-  kenv-config-file-read "${KENV_ROOT}/default" ||
-  echo system
-#  { echo "kenv: no global configured"
-#    exit 1
-#  } >&2
+  kenv-machine-file-read "$KENV_MACHINE_FILE" ||
+  { echo "kenv: no global machine configured"
+    exit 1
+  } >&2
 fi
 

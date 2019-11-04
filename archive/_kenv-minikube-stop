@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Summary: Stop the minikenv machine by name
+# Summary: Stop the minikube machine by name
 
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
@@ -15,13 +15,13 @@ fi
 
 machine_stopped() {
   local machine="$1"
-  local running="$(minikenv --profile ${machine} status --format "{{.Host}}" 2>&1)"
+  local running="$(minikube --profile ${machine} status --format "{{.Host}}" 2>&1)"
   [ "${running}" == "Stopped" ]
 }
 
 machine_stop() {
   local machine="$1"
-  minikenv --profile ${machine} stop
+  minikube --profile ${machine} stop
 }
 
 if machine_stopped "$KENV_MACHINE"; then

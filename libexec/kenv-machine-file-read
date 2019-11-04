@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Usage: kenv machine-file-read <file>
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+MACHINE_FILE="$1"
+
+if [ -e "$MACHINE_FILE" ]; then
+  # Read the first non-whitespace word from the specified machine file.
+  # Be careful not to load it whole in case there's something crazy in it.
+  machine=""
+  while read -a words; do
+    word="${words[0]}"
+    if [ -z "$machine" ] && [ -n "$word" ]; then
+      machine="$word"
+    fi
+  done < <( cat "$MACHINE_FILE" && echo )
+
+  if [ -n "$machine" ]; then
+    echo "$machine"
+    exit
+  fi
+fi
+
+exit 1

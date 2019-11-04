@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Usage: kenv machine-file-write <file> <machine>
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+KENV_MACHINE_FILE="$1"
+KENV_MACHINE="$2"
+
+if [ -z "$KENV_MACHINE" ] || [ -z "$KENV_MACHINE_FILE" ]; then
+  kenv-help --usage machine-file-write >&2
+  exit 1
+fi
+
+# Write the machine out to disk.
+echo "$KENV_MACHINE" > "$KENV_MACHINE_FILE"

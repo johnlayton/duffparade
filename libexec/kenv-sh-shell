@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 #
-# Summary: Set or show the shell-specific kube config
+# Summary: Set or show the shell-specific kube machine
 #
-# Usage: kenv shell <config>
+# Usage: kenv shell <machine>
 #        kenv shell --unset
 #
-# Sets a shell-specific minikenv config by setting the `KENV_CONFIG'
-# environment variable in your shell. This config overrides local
-# application-specific configs and the global macine.
+# Sets a shell-specific minikenv machine by setting the `KENV_MACHINE'
+# environment variable in your shell. This machine overrides local
+# application-specific machines and the global macine.
 #
-# <config> should be a string matching an installed minikenv config known to kenv.
-# The special config string `system' will use your default config.
-# Run `kenv config' for a list of available Node configs.
+# <machine> should be a string matching an installed minikenv machine known to kenv.
+# The special machine string `system' will use your default machine.
+# Run `kenv machine' for a list of available Node machines.
 
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
@@ -20,29 +20,29 @@ set -e
 if [ "$1" = "--complete" ]; then
   echo --unset
   echo system
-  exec kenv-configs --bare
+  exec kenv-machines --bare
 fi
 
-config="$1"
+machine="$1"
 
-if [ -z "$config" ]; then
-  if [ -z "$KENV_CONFIG" ]; then
-    echo "kenv: no shell-specific config configured" >&2
+if [ -z "$machine" ]; then
+  if [ -z "$KENV_MACHINE" ]; then
+    echo "kenv: no shell-specific machine configured" >&2
     exit 1
   else
-    echo "echo \"\$KENV_CONFIG\""
+    echo "echo \"\$KENV_MACHINE\""
     exit
   fi
 fi
 
-if [ "$config" = "--unset" ]; then
-  echo "unset KENV_CONFIG"
+if [ "$machine" = "--unset" ]; then
+  echo "unset KENV_MACHINE"
   exit
 fi
 
-# Make sure the specified config is installed.
-if kenv-prefix "$config" >/dev/null; then
-  echo "export KENV_CONFIG=\"${config}\""
+# Make sure the specified machine is installed.
+if kenv-prefix "$machine" >/dev/null; then
+  echo "export KENV_MACHINE=\"${machine}\""
 else
   echo "return 1"
   exit 1
