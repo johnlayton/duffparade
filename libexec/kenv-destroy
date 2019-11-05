@@ -10,7 +10,7 @@ if [ -z "$KENV_MACHINE" ]; then
 fi
 
 if [ -z "$KENV_MACHINE" ] || [ "$KENV_MACHINE" = "system" ]; then
-  echo "no machine specified"
+  echo "no machine specified" >&2
   exit
 fi
 

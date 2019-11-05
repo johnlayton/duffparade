@@ -9,23 +9,28 @@ export KUBECONFIG=
 KENV_TYPE="$1"
 KENV_NAME="$2"
 
-if [ -z "$KENV_MACHINE" ]; then
-  KENV_MACHINE_FILE="$(kenv-machine-file)"
-  KENV_MACHINE="$(kenv-machine-file-read "$KENV_MACHINE_FILE" || true)"
-fi
+#if [ -z "$KENV_MACHINE" ]; then
+#  KENV_MACHINE_FILE="$(kenv-machine-file)"
+#  KENV_MACHINE="$(kenv-machine-file-read "$KENV_MACHINE_FILE" || true)"
+#fi
 
 if [ -z "$KENV_TYPE" ] || [ -z "$KENV_NAME" ]; then
   KENV_TYPE="$(kenv-machine-type)"
   KENV_NAME="$(kenv-machine-name)"
 fi
 
+if [ ! -d "${KENV_ROOT}/machines/${KENV_TYPE}-${KENV_NAME}" ]
+then
+  mkdir "${KENV_ROOT}/machines/${KENV_TYPE}-${KENV_NAME}"
+fi
+
 if [ $KENV_TYPE == "kind" ]
 then
-  echo "kenv: kind create"
+  echo "kenv: kind create" >&2
   kenv-kind-create "${KENV_NAME}"
 elif [ $KENV_TYPE == "minikube" ]
 then
-  echo "kenv: minikube create"
+  echo "kenv: minikube create" >&2
   kenv-minikube-create "${KENV_NAME}"
 else
   { echo "kenv: unknown type"

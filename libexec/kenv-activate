@@ -8,12 +8,28 @@ KENV_MACHINE="$1"
 
 if [ -z "$KENV_MACHINE" ]; then
   KENV_MACHINE="$(kenv-machine-desc)"
+  KENV_TYPE="$(kenv-machine-type)"
+  KENV_NAME="$(kenv-machine-name)"
 fi
 
 if [ -z "$KENV_MACHINE" ]
 then
-  echo "no machine specified"
+  echo "no machine specified" >&2
   exit
+fi
+
+if [ $KENV_TYPE == "kind" ]
+then
+  echo "kenv: kind activate" >&2
+  kenv-kind-activate "${KENV_NAME}"
+elif [ $KENV_TYPE == "minikube" ]
+then
+  echo "kenv: minikube activate" >&2
+  kenv-minikube-activate "${KENV_NAME}"
+else
+  { echo "kenv: unknown type"
+    exit 1
+  } >&2
 fi
 
 echo "export KUBECONFIG=\"${KENV_ROOT}/machines/${KENV_MACHINE}/config\""

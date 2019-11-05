@@ -7,4 +7,4 @@
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
-echo "$(kenv-machine-desc) (set by $(kenv-machine-origin))"
+echo "$(kenv-machine-desc) (set by $(kenv-machine-origin))" >&2

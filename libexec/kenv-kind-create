@@ -29,7 +29,6 @@ if machine_running "$KENV_MACHINE"; then
 else
     if machine_create "$KENV_MACHINE"; then
         kenv-machine-file-write .kenv-machine kind-"$KENV_MACHINE"
-        mkdir "${KENV_ROOT}/machines/kind-${1}"
         cp "${HOME}/.kube/kind-config-${1}" "${KENV_ROOT}/machines/kind-${1}/config"
         echo "kenv: kind create \`$KENV_MACHINE' created" >&2
         exit 0
