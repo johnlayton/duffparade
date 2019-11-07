@@ -29,6 +29,9 @@ if machine_running "$KENV_MACHINE"; then
     exit 0
 else
     if machine_start "$KENV_MACHINE"; then
+      echo "export DOCKER_TLS_VERIFY="
+      echo "export DOCKER_HOST="
+      echo "export DOCKER_CERT_PATH="
 #        kenv-machine-file-write .kenv-machine kind-"$KENV_MACHINE"
 #        mkdir "${KENV_ROOT}/machines/kind-${1}"
 #        cp "${HOME}/.kube/kind-config-${1}" "${KENV_ROOT}/machines/kind-${1}/config"
