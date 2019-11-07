@@ -5,7 +5,8 @@ set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
 if [ -z "$KENV_MACHINE" ]; then
-  KENV_MACHINE="$(kenv-machine-desc)"
+  KENV_MACHINE_FILE="$(kenv-machine-file)"
+  KENV_MACHINE="$(kenv-machine-file-read "$KENV_MACHINE_FILE" || true)"
 fi
 
 IFS='-' read -ra MY_ARRAY <<< "$KENV_MACHINE"
