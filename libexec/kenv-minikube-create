@@ -5,7 +5,7 @@ set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
 if [ -z "$KENV_MACHINE" ]; then
-  KENV_MACHINE="$(kenv-machine-desc)"
+  KENV_MACHINE="$(kenv-machine-name)"
 fi
 
 if [ -z "$KENV_MACHINE" ] || [ "$KENV_MACHINE" = "system" ]; then
