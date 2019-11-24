@@ -20,7 +20,7 @@ machine_running() {
 }
 
 machine_create() {
-  kind create cluster --name "${1}"
+  kind create cluster --name "${1}" >&2
 }
 
 if machine_running "$KENV_MACHINE"; then

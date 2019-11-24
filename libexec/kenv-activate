@@ -20,11 +20,11 @@ fi
 
 if [ $KENV_TYPE == "kind" ]
 then
-  echo "kenv: kind activate" >&2
+  echo "kenv: kind activate ${KENV_NAME}" >&2
   kenv-kind-activate "${KENV_NAME}"
 elif [ $KENV_TYPE == "minikube" ]
 then
-  echo "kenv: minikube activate" >&2
+  echo "kenv: minikube activate ${KENV_NAME}" >&2
   kenv-minikube-activate "${KENV_NAME}"
 else
   { echo "kenv: unknown type"
