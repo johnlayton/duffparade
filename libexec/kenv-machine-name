@@ -9,18 +9,10 @@ if [ -z "$KENV_MACHINE" ]; then
   KENV_MACHINE="$(kenv-machine-file-read "$KENV_MACHINE_FILE" || true)"
 fi
 
-IFS='-' read -ra MY_ARRAY <<< "$KENV_MACHINE"
-echo "${MY_ARRAY[1]}"
+function name {
+  local IFS='-'
+  read -ra MY_ARRAY <<< "$KENV_MACHINE"
+  echo "${MY_ARRAY[*]:1}"
+}
 
-#KENV_NAME="${MY_ARRAY[1]}"
-#
-#machine_exists() {
-#  [ -d "${KENV_ROOT}/machines/${1}" ]
-#}
-#
-#if machine_exists "$KENV_MACHINE"; then
-#  echo "$KENV_NAME"
-#else
-#  echo "kenv: machine \`$KENV_MACHINE' is not installed" >&2
-#  exit 1
-#fi
+echo "$(name)"

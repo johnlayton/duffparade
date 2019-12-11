@@ -26,6 +26,9 @@ elif [ $KENV_TYPE == "minikube" ]
 then
   echo "kenv: minikube activate ${KENV_NAME}" >&2
   kenv-minikube-activate "${KENV_NAME}"
+elif [ $KENV_TYPE == "remote" ]
+then
+  echo "kenv: remote activate ${KENV_NAME}" >&2
 else
   { echo "kenv: unknown type"
     exit 1

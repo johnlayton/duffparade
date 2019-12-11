@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Summary: Save a new kubernetes in docker
+# Summary: Create a new kubernetes in docker
 
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
@@ -22,18 +22,9 @@ fi
 if [ ! -d "${KENV_ROOT}/machines/${KENV_TYPE}-${KENV_NAME}" ]
 then
   mkdir "${KENV_ROOT}/machines/${KENV_TYPE}-${KENV_NAME}"
-fi
-
-if [ $KENV_TYPE == "kind" ]
-then
-  echo "kenv: kind create" >&2
-  kenv-kind-create "${KENV_NAME}"
-elif [ $KENV_TYPE == "minikube" ]
-then
-  echo "kenv: minikube create" >&2
-  kenv-minikube-create "${KENV_NAME}"
-else
-  { echo "kenv: unknown type"
-    exit 1
-  } >&2
+  if [ -d "$HOME/.kube" ] && [ -f "$HOME/.kube/config" ]
+  then
+    cp ~/.kube/config "${KENV_ROOT}/machines/${KENV_TYPE}-${KENV_NAME}/config"
+    echo "${KENV_TYPE}-${KENV_NAME}" > ".kenv-machine"
+  fi
 fi

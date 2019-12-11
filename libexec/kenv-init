@@ -73,19 +73,17 @@ fi
 
 if [ ! -d "${KENV_ROOT}/machines" ]
 then
-  mkdir -p "${KENV_ROOT}/machines"
   mkdir -p "${KENV_ROOT}/machines/original"
 fi
 
 if [ ! -d "${KENV_ROOT}/machines/original" ]
 then
   mkdir -p "${KENV_ROOT}/machines/original"
-fi
-
-if [ -d "$HOME/.kube" ] && [ -f "$HOME/.kube/config" ]
-then
-  cp ~/.kube/config "${KENV_ROOT}"/machines/original/config
-  echo "system-original" > "${KENV_ROOT}/.kenv-machine"
+  if [ -d "$HOME/.kube" ] && [ -f "$HOME/.kube/config" ]
+  then
+    cp ~/.kube/config "${KENV_ROOT}"/machines/original/config
+    echo "original" > "${KENV_ROOT}/.kenv-machine"
+  fi
 fi
 
 case "$shell" in
