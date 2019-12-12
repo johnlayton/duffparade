@@ -4,6 +4,8 @@
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
+KENV_MACHINE="${1}"
+
 if [ -z "$KENV_MACHINE" ]; then
   KENV_MACHINE_FILE="$(kenv-machine-file)"
   KENV_MACHINE="$(kenv-machine-file-read "$KENV_MACHINE_FILE" || true)"

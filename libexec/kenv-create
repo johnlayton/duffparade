@@ -4,7 +4,8 @@
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
-export KUBECONFIG=
+unset KUBECONFIG
+#echo "KUBECONFIG=${KUBECONFIG}" >&2
 
 KENV_TYPE="$1"
 KENV_NAME="$2"
@@ -14,7 +15,7 @@ KENV_NAME="$2"
 #  KENV_MACHINE="$(kenv-machine-file-read "$KENV_MACHINE_FILE" || true)"
 #fi
 
-if [ -z "$KENV_TYPE" ] || [ -z "$KENV_NAME" ]; then
+if [ -z "$KENV_TYPE" ] && [ -z "$KENV_NAME" ]; then
   KENV_TYPE="$(kenv-machine-type)"
   KENV_NAME="$(kenv-machine-name)"
 fi
@@ -32,6 +33,10 @@ elif [ $KENV_TYPE == "minikube" ]
 then
   echo "kenv: minikube create" >&2
   kenv-minikube-create "${KENV_NAME}"
+elif [ $KENV_TYPE == "remote" ]
+then
+  echo "kenv: remote create" >&2
+  kenv-remote-create "${KENV_NAME}"
 else
   { echo "kenv: unknown type"
     exit 1

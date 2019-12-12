@@ -4,6 +4,10 @@
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
+if [ -z "$1" ]; then
+  KENV_MACHINE="minikube-${1}"
+fi
+
 if [ -z "$KENV_MACHINE" ]; then
   KENV_MACHINE="$(kenv-machine-name)"
 fi
@@ -12,8 +16,6 @@ if [ -z "$KENV_MACHINE" ] || [ "$KENV_MACHINE" = "system" ]; then
   echo "no machine specified"
   exit
 fi
-
-export KUBECONFIG="${KENV_ROOT}/machines/minikube-${KENV_MACHINE}/config"
 
 machine_running() {
   local machine="$1"

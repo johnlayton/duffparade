@@ -4,15 +4,10 @@
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
-export KUBECONFIG=
+unset KUBECONFIG
 
 KENV_TYPE="$1"
 KENV_NAME="$2"
-
-#if [ -z "$KENV_MACHINE" ]; then
-#  KENV_MACHINE_FILE="$(kenv-machine-file)"
-#  KENV_MACHINE="$(kenv-machine-file-read "$KENV_MACHINE_FILE" || true)"
-#fi
 
 if [ -z "$KENV_TYPE" ] || [ -z "$KENV_NAME" ]; then
   KENV_TYPE="$(kenv-machine-type)"

@@ -8,9 +8,10 @@ KENV_MACHINE="$1"
 
 if [ -z "$KENV_MACHINE" ]; then
   KENV_MACHINE="$(kenv-machine-desc)"
-  KENV_TYPE="$(kenv-machine-type)"
-  KENV_NAME="$(kenv-machine-name)"
 fi
+
+KENV_TYPE="$(kenv-machine-type ${KENV_MACHINE})"
+KENV_NAME="$(kenv-machine-name ${KENV_MACHINE})"
 
 if [ -z "$KENV_MACHINE" ]
 then

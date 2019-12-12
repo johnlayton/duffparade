@@ -31,16 +31,16 @@ machine_start() {
   local machine="$1"
   minikube profile $machine >&2
   minikube --profile "$machine" start >&2
-  minikube --profile "$KENV_MACHINE" docker-env
 }
 
 if machine_running "$KENV_MACHINE"; then
     echo "kenv: minikube activate \`$KENV_MACHINE' already running" >&2
-    minikube --profile "$KENV_MACHINE" docker-env
+    echo "$(minikube --profile "$KENV_MACHINE" docker-env)"
     exit 0
 elif machine_stopped "$KENV_MACHINE"; then
     if machine_start "$KENV_MACHINE"; then
         echo "kenv: minikube activate \`$KENV_MACHINE' started" >&2
+        echo "$(minikube --profile "$KENV_MACHINE" docker-env)"
         exit 0
     else
         echo "kenv: minikube activate \`$KENV_MACHINE' not started" >&2
