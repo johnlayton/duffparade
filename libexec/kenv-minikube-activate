@@ -24,7 +24,7 @@ machine_running() {
 machine_stopped() {
   local machine="$1"
   local running="$(minikube --profile ${machine} status --format "{{.Host}}" 2>&1)"
-  [ "${running}" != "Running" ]
+  [ "${running}" == "Stopped" ]
 }
 
 machine_start() {
@@ -35,15 +35,15 @@ machine_start() {
 
 if machine_running "$KENV_MACHINE"; then
     echo "kenv: minikube activate \`$KENV_MACHINE' already running" >&2
-    echo "$(minikube --profile "$KENV_MACHINE" docker-env)"
+    echo "$(minikube --profile ${KENV_MACHINE} docker-env)"
     exit 0
 elif machine_stopped "$KENV_MACHINE"; then
     if machine_start "$KENV_MACHINE"; then
         echo "kenv: minikube activate \`$KENV_MACHINE' started" >&2
-        echo "$(minikube --profile "$KENV_MACHINE" docker-env)"
+        echo "$(minikube --profile ${KENV_MACHINE} docker-env)"
         exit 0
     else
-        echo "kenv: minikube activate \`$KENV_MACHINE' not started" >&2
+        echo "kenv: minikube activate ${KENV_MACHINE} not started" >&2
         exit 1
     fi
 fi
