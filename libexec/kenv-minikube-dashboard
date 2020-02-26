@@ -4,13 +4,10 @@
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
-if [ -z "$KENV_MACHINE" ]; then
-  KENV_MACHINE="$(kenv-machine-name)"
-fi
+KENV_NAME="$1"
 
-if [ -z "$KENV_MACHINE" ] || [ "$KENV_MACHINE" = "system" ]; then
-  echo "system"
-  exit
+if [ -z "${KENV_NAME}" ]; then
+  KENV_NAME="$(kenv-machine-name)"
 fi
 
 machine_running() {
@@ -24,11 +21,11 @@ machine_start_dashboard() {
   minikube --profile ${machine} dashboard
 }
 
-if machine_running "$KENV_MACHINE"; then
-    echo "kenv: machine \`$KENV_MACHINE' start dashboard" >&2
-    machine_start_dashboard "$KENV_MACHINE" &
+if machine_running "$KENV_NAME"; then
+    echo "kenv: machine $KENV_NAME start dashboard" >&2
+    machine_start_dashboard "$KENV_NAME" &
     exit 0
 else
-    echo "kenv: machine \`$KENV_MACHINE' is not running" >&2
+    echo "kenv: machine $KENV_NAME is not running" >&2
     exit 1
 fi

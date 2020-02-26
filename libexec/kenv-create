@@ -5,15 +5,9 @@ set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
 unset KUBECONFIG
-#echo "KUBECONFIG=${KUBECONFIG}" >&2
 
 KENV_TYPE="$1"
 KENV_NAME="$2"
-
-#if [ -z "$KENV_MACHINE" ]; then
-#  KENV_MACHINE_FILE="$(kenv-machine-file)"
-#  KENV_MACHINE="$(kenv-machine-file-read "$KENV_MACHINE_FILE" || true)"
-#fi
 
 if [ -z "$KENV_TYPE" ] && [ -z "$KENV_NAME" ]; then
   KENV_TYPE="$(kenv-machine-type)"
@@ -27,12 +21,16 @@ fi
 
 if [ $KENV_TYPE == "kind" ]
 then
-  echo "kenv: kind create" >&2
+  echo "kenv: kind create ${KENV_NAME}" >&2
   kenv-kind-create "${KENV_NAME}"
 elif [ $KENV_TYPE == "minikube" ]
 then
-  echo "kenv: minikube create" >&2
+  echo "kenv: minikube create ${KENV_NAME}" >&2
   kenv-minikube-create "${KENV_NAME}"
+elif [ $KENV_TYPE == "multipass" ]
+then
+  echo "kenv: multipass create ${KENV_NAME}" >&2
+  kenv-multipass-create "${KENV_NAME}"
 elif [ $KENV_TYPE == "remote" ]
 then
   echo "kenv: remote create" >&2

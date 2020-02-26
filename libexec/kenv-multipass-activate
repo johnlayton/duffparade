@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Summary: Activate a multipass machine
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+KENV_NAME="$1"
+
+if [ -z "${KENV_NAME}" ]; then
+  KENV_NAME="$(kenv-machine-name)"
+fi
+
+machine_running() {
+  local machine="$1"
+  local state="$(multipass info ${machine} --format json | jq --raw-output '.info["${machine}"]["state"]' 2>&1)"
+  [ "${state}" == "Running" ]
+}
+
+machine_stopped() {
+  local machine="$1"
+  local state="$(multipass info ${machine} --format json | jq --raw-output '.info["${machine}"]["state"]' 2>&1)"
+  [ "${state}" == "Stopped" ]
+}
+
+machine_start() {
+  local machine="$1"
+  multipass start $machine
+}
+
+if machine_running "${KENV_NAME}"; then
+    echo "kenv: multipass activate ${KENV_NAME} already running" >&2
+    exit 0
+elif machine_stopped "${KENV_NAME}"; then
+    if machine_start "${KENV_NAME}"; then
+        echo "kenv: multipass activate ${KENV_NAME} started" >&2
+        exit 0
+    else
+        echo "kenv: multipass activate ${KENV_NAME} not started" >&2
+        exit 1
+    fi
+fi

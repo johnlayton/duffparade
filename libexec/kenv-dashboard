@@ -15,19 +15,18 @@ KENV_NAME="$(kenv-machine-name ${KENV_MACHINE})"
 
 if [ $KENV_TYPE == "kind" ]
 then
-  echo "kenv: kind activate ${KENV_NAME}" >&2
-  kenv-kind-activate "${KENV_NAME}"
+  echo "kenv: kind dashboard ${KENV_NAME}" >&2
 elif [ $KENV_TYPE == "minikube" ]
 then
-  echo "kenv: minikube activate ${KENV_NAME}" >&2
-  kenv-minikube-activate "${KENV_NAME}"
+  echo "kenv: minikube dashboard ${KENV_NAME}" >&2
+  kenv-minikube-dashboard "${KENV_NAME}"
 elif [ $KENV_TYPE == "multipass" ]
 then
-  echo "kenv: multipass activate ${KENV_NAME}" >&2
-  kenv-multipass-activate "${KENV_NAME}"
+  echo "kenv: multipass dashboard ${KENV_NAME}" >&2
+  kenv-multipass-dashboard "${KENV_NAME}"
 elif [ $KENV_TYPE == "remote" ]
 then
-  echo "kenv: remote activate ${KENV_NAME}" >&2
+  echo "kenv: remote dashboard ${KENV_NAME}" >&2
 else
   { echo "kenv: unknown type"
     exit 1

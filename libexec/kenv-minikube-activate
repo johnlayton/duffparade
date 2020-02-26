@@ -4,15 +4,10 @@
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
-KENV_MACHINE="$1"
+KENV_NAME="$1"
 
-if [ -z "$KENV_MACHINE" ]; then
-  KENV_MACHINE="$(kenv-machine-desc)"
-fi
-
-if [ -z "$KENV_MACHINE" ] || [ "$KENV_MACHINE" = "system" ]; then
-  echo "no machine specified"
-  exit
+if [ -z "${KENV_NAME}" ]; then
+  KENV_NAME="$(kenv-machine-name)"
 fi
 
 machine_running() {
@@ -33,17 +28,17 @@ machine_start() {
   minikube --profile "$machine" start >&2
 }
 
-if machine_running "$KENV_MACHINE"; then
-    echo "kenv: minikube activate \`$KENV_MACHINE' already running" >&2
-    echo "$(minikube --profile ${KENV_MACHINE} docker-env)"
+if machine_running "$KENV_NAME"; then
+    echo "kenv: minikube activate $KENV_NAME already running" >&2
+    echo "$(minikube --profile ${KENV_NAME} docker-env)"
     exit 0
-elif machine_stopped "$KENV_MACHINE"; then
-    if machine_start "$KENV_MACHINE"; then
-        echo "kenv: minikube activate \`$KENV_MACHINE' started" >&2
-        echo "$(minikube --profile ${KENV_MACHINE} docker-env)"
+elif machine_stopped "$KENV_NAME"; then
+    if machine_start "$KENV_NAME"; then
+        echo "kenv: minikube activate $KENV_NAME started" >&2
+        echo "$(minikube --profile ${KENV_NAME} docker-env)"
         exit 0
     else
-        echo "kenv: minikube activate ${KENV_MACHINE} not started" >&2
+        echo "kenv: minikube activate ${KENV_NAME} not started" >&2
         exit 1
     fi
 fi

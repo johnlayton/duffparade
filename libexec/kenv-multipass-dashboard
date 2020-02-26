@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Summary: Start the multipass microk8s dashboard
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+KENV_NAME="$1"
+
+if [ -z "${KENV_NAME}" ]; then
+  KENV_NAME="$(kenv-machine-name)"
+fi
+
+machine_running() {
+  local machine="$1"
+  local state="$(multipass info ${machine} --format json | jq --raw-output '.info["${machine}"]["state"]' 2>&1)"
+  [ "${state}" == "Running" ]
+}
+
+machine_stopped() {
+  local machine="$1"
+  local state="$(multipass info ${machine} --format json | jq --raw-output '.info["${machine}"]["state"]' 2>&1)"
+  [ "${state}" == "Stopped" ]
+}
+
+machine_start_dashboard() {
+  local machine="$1"
+  multipass exec ${machine} -- /snap/bin/microk8s.enable dns dashboard
+}
+
+if machine_running "$KENV_NAME"; then
+    echo "kenv: multipass machine $KENV_NAME start dashboard" >&2
+    machine_start_dashboard "$KENV_NAME" &
+    exit 0
+else
+    echo "kenv: multipass machine $KENV_NAME is not running" >&2
+    exit 1
+fi

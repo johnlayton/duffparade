@@ -4,15 +4,14 @@
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
 
+KENV_MACHINE="$1"
+
 if [ -z "$KENV_MACHINE" ]; then
-  KENV_MACHINE_FILE="$(kenv-machine-file)"
-  KENV_MACHINE="$(kenv-machine-file-read "$KENV_MACHINE_FILE" || true)"
+  KENV_MACHINE="$(kenv-machine-desc)"
 fi
 
-if [ -z "$KENV_MACHINE" ] || [ "$KENV_MACHINE" = "system" ]; then
-  echo "no machine specified" >&2
-  exit
-fi
+KENV_TYPE="$(kenv-machine-type ${KENV_MACHINE})"
+KENV_NAME="$(kenv-machine-name ${KENV_MACHINE})"
 
 destroy_kind() {
   kind delete cluster --name "${1}"
@@ -21,10 +20,14 @@ destroy_kind() {
 
 if [ $KENV_TYPE == "kind" ]
 then
+  echo "kenv: kind destroy ${KENV_NAME}" >&2
   destroy_kind "${KENV_NAME}"
 elif [ $KENV_TYPE == "minikube" ]
 then
-  echo "export KUBEMACHINE=\"${KENV_ROOT}/machines/${KENV_MACHINE}/machine\""
-else
-  echo "export KUBEMACHINE=\"${KENV_ROOT}/machines/default/machine\""
+  echo "kenv: minikube destroy ${KENV_NAME}" >&2
+elif [ $KENV_TYPE == "multipass" ]
+then
+  echo "kenv: multipass destroy ${KENV_NAME}" >&2
 fi
+
+  echo "export KUBEMACHINE=\"${KENV_ROOT}/machines/default/machine\""
