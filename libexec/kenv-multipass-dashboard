@@ -11,15 +11,9 @@ if [ -z "${KENV_NAME}" ]; then
 fi
 
 machine_running() {
-  local machine="$1"
-  local state="$(multipass info ${machine} --format json | jq --raw-output '.info["${machine}"]["state"]' 2>&1)"
+  local query=".info[\"${1}\"][\"state\"]"
+  local state="$(multipass info "${1}" --format json | jq --raw-output $query 2>&1)"
   [ "${state}" == "Running" ]
-}
-
-machine_stopped() {
-  local machine="$1"
-  local state="$(multipass info ${machine} --format json | jq --raw-output '.info["${machine}"]["state"]' 2>&1)"
-  [ "${state}" == "Stopped" ]
 }
 
 machine_start_dashboard() {
