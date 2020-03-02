@@ -25,9 +25,12 @@ then
 elif [ $KENV_TYPE == "minikube" ]
 then
   echo "kenv: minikube destroy ${KENV_NAME}" >&2
-elif [ $KENV_TYPE == "multipass" ]
+elif [ $KENV_TYPE == "microk8s" ]
 then
-  echo "kenv: multipass destroy ${KENV_NAME}" >&2
+  echo "kenv: microk8s destroy ${KENV_NAME}" >&2
+elif [ $KENV_TYPE == "k3s" ]
+then
+  echo "kenv: k3s destroy ${KENV_NAME}" >&2
 fi
 
   echo "export KUBEMACHINE=\"${KENV_ROOT}/machines/default/machine\""

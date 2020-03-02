@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# Summary: Create a new multipass k3s machine
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+KENV_NAME="$1"
+
+if [ -z "${KENV_NAME}" ]; then
+  KENV_NAME="$(kenv-machine-name)"
+fi
+
+machine_state() {
+  local query=".info[\"${1}\"][\"state\"]"
+  echo "$(multipass info "${1}" --format json | jq --raw-output $query 2>&1)"
+}
+
+machine_address() {
+  local query=".info[\"${1}\"][\"ipv4\"][0]"
+  echo "$(multipass info "${1}" --format json | jq --raw-output $query 2>&1)"
+}
+
+machine_running() {
+  [ "$(machine_state $KENV_NAME)" == "Running" ]
+}
+
+machine_stopped() {
+  [ "$(machine_state $KENV_NAME)" == "Stopped" ]
+}
+
+machine_create() {
+  local machine="$1"
+  # create machine
+  multipass launch --name "${machine}" --mem 4G --disk 40G
+  # Authorisation
+  multipass transfer ~/.ssh/id_rsa.pub ${machine}:
+  multipass exec ${machine} -- bash -c 'sudo cat /home/ubuntu/id_rsa.pub >> /home/ubuntu/.ssh/authorized_keys'
+  # Networking
+  multipass exec ${machine} -- sudo iptables -P FORWARD ACCEPT
+#  multipass exec ${machine} -- bash -c 'sudo chown ubuntu:ubuntu /etc/hosts'
+#  multipass exec ${machine} -- bash -c 'sudo cat /home/ubuntu/hosts >> /etc/hosts'
+  multipass exec ${machine} -- bash -c 'curl -sfL https://get.k3s.io | sh -'
+}
+
+if machine_running "${KENV_NAME}"; then
+    echo "kenv: k3s create ${KENV_NAME} already running" >&2
+    exit 0
+elif machine_stopped "${KENV_NAME}"; then
+    echo "kenv: k3s create ${KENV_NAME} already exists" >&2
+    exit 0
+else
+    if machine_create "${KENV_NAME}"; then
+        kenv-machine-file-write .kenv-machine k3s-"$KENV_NAME"
+        multipass exec ${KENV_NAME} -- sudo cat /etc/rancher/k3s/k3s.yaml > "${KENV_ROOT}/machines/k3s-${KENV_NAME}/config"
+        sed -i .bak s/127.0.0.1/$(machine_address $KENV_NAME)/g "${KENV_ROOT}/machines/k3s-${KENV_NAME}/config"
+        echo "kenv: k3s create ${KENV_NAME} created" >&2
+        exit 0
+    else
+        echo "kenv: k3s create ${KENV_NAME} not created" >&2
+        exit 1
+    fi
+fi

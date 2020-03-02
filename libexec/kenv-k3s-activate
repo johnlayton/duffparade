@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Summary: Activate a multipass machine
+# Summary: Activate a multipass k3s machine
 
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
@@ -28,14 +28,14 @@ machine_start() {
 }
 
 if machine_running "${KENV_NAME}"; then
-    echo "kenv: multipass activate ${KENV_NAME} already running" >&2
+    echo "kenv: k3s activate ${KENV_NAME} already running" >&2
     exit 0
 elif machine_stopped "${KENV_NAME}"; then
     if machine_start "${KENV_NAME}"; then
-        echo "kenv: multipass activate ${KENV_NAME} started" >&2
+        echo "kenv: k3s activate ${KENV_NAME} started" >&2
         exit 0
     else
-        echo "kenv: multipass activate ${KENV_NAME} not started" >&2
+        echo "kenv: k3s activate ${KENV_NAME} not started" >&2
         exit 1
     fi
 fi

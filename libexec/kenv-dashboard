@@ -20,10 +20,14 @@ elif [ $KENV_TYPE == "minikube" ]
 then
   echo "kenv: minikube dashboard ${KENV_NAME}" >&2
   kenv-minikube-dashboard "${KENV_NAME}"
-elif [ $KENV_TYPE == "multipass" ]
+elif [ $KENV_TYPE == "microk8s" ]
 then
-  echo "kenv: multipass dashboard ${KENV_NAME}" >&2
-  kenv-multipass-dashboard "${KENV_NAME}"
+  echo "kenv: microk8s dashboard ${KENV_NAME}" >&2
+  kenv-microk8s-dashboard "${KENV_NAME}"
+elif [ $KENV_TYPE == "k3s" ]
+then
+  echo "kenv: k3s dashboard ${KENV_NAME}" >&2
+  kenv-k3s-dashboard "${KENV_NAME}"
 elif [ $KENV_TYPE == "remote" ]
 then
   echo "kenv: remote dashboard ${KENV_NAME}" >&2

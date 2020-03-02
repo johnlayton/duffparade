@@ -24,9 +24,17 @@ machine_stopped() {
 
 machine_create() {
   local machine="$1"
+  # create  machine
   multipass launch --name "${machine}" --mem 4G --disk 40G
+  # snap install microk8s
   multipass exec "${machine}" -- sudo snap install microk8s --classic
-  multipass exec "${machine}" -- sudo iptables -P FORWARD ACCEPT
+  # Authorisaction
+  multipass transfer ~/.ssh/id_rsa.pub ${machine}:
+  multipass exec ${machine} -- bash -c 'sudo cat /home/ubuntu/id_rsa.pub >> /home/ubuntu/.ssh/authorized_keys'
+  # Networking
+  multipass exec ${machine} -- sudo iptables -P FORWARD ACCEPT
+#  multipass exec ${machine} -- bash -c 'sudo chown ubuntu:ubuntu /etc/hosts'
+#  multipass exec ${machine} -- bash -c 'sudo cat /home/ubuntu/hosts >> /etc/hosts'
   multipass exec "${machine}" -- sudo usermod -a -G microk8s ubuntu
 }
 
@@ -38,8 +46,8 @@ elif machine_stopped "${KENV_NAME}"; then
     exit 0
 else
     if machine_create "${KENV_NAME}"; then
-        kenv-machine-file-write .kenv-machine multipass-"$KENV_NAME"
-        multipass exec ${KENV_NAME} -- /snap/bin/microk8s.config > "${KENV_ROOT}/machines/multipass-${KENV_NAME}/config"
+        kenv-machine-file-write .kenv-machine microk8s-"$KENV_NAME"
+        multipass exec ${KENV_NAME} -- /snap/bin/microk8s.config > "${KENV_ROOT}/machines/microk8s-${KENV_NAME}/config"
         echo "kenv: multipass create ${KENV_NAME} created" >&2
         exit 0
     else

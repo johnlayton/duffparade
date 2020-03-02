@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Summary: Start the multipass microk8s dashboard
+# Summary: Start the multipass k3s dashboard
 
 set -e
 [ -n "$KENV_DEBUG" ] && set -x
@@ -18,14 +18,15 @@ machine_running() {
 
 machine_start_dashboard() {
   local machine="$1"
-  multipass exec ${machine} -- /snap/bin/microk8s.enable dns dashboard
+  echo "I would now create the dashboard"
+#  multipass exec ${machine} -- /snap/bin/microk8s.enable dns dashboard
 }
 
 if machine_running "$KENV_NAME"; then
-    echo "kenv: multipass machine $KENV_NAME start dashboard" >&2
+    echo "kenv: k3s machine $KENV_NAME start dashboard" >&2
     machine_start_dashboard "$KENV_NAME" &
     exit 0
 else
-    echo "kenv: multipass machine $KENV_NAME is not running" >&2
+    echo "kenv: k3s machine $KENV_NAME is not running" >&2
     exit 1
 fi

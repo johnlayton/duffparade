@@ -27,10 +27,14 @@ elif [ $KENV_TYPE == "minikube" ]
 then
   echo "kenv: minikube create ${KENV_NAME}" >&2
   kenv-minikube-create "${KENV_NAME}"
-elif [ $KENV_TYPE == "multipass" ]
+elif [ $KENV_TYPE == "microk8s" ]
 then
-  echo "kenv: multipass create ${KENV_NAME}" >&2
-  kenv-multipass-create "${KENV_NAME}"
+  echo "kenv: microk8s create ${KENV_NAME}" >&2
+  kenv-microk8s-create "${KENV_NAME}"
+elif [ $KENV_TYPE == "k3s" ]
+then
+  echo "kenv: k3s create ${KENV_NAME}" >&2
+  kenv-k3s-create "${KENV_NAME}"
 elif [ $KENV_TYPE == "remote" ]
 then
   echo "kenv: remote create" >&2
