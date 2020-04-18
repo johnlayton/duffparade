@@ -20,8 +20,8 @@ else
 fi
 
 print_machine() {
-  if [ "$1" == "$current_machine" ]; then
-    echo "${hit_prefix}${inst_prefix}$(kenv-machine 2>/dev/null) $1"
+  if [[ "$1" == "$current_machine" ]]; then
+    echo "${hit_prefix}${inst_prefix}$(kenv-machine 2>&1)"
   elif [[ -d  "${KENV_ROOT}/machines/$1" ]]; then
     echo "${miss_prefix}${inst_prefix}$1"
   else
