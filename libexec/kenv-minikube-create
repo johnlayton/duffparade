@@ -42,6 +42,8 @@ elif machine_stopped "$KENV_NAME"; then
 else
     if machine_create "$KENV_NAME"; then
         kenv-machine-file-write .kenv-machine minikube-"$KENV_NAME"
+        mkdir "${KENV_ROOT}/machines/minikube-${KENV_NAME}"
+        mv "${HOME}/.kube/config" "${KENV_ROOT}/machines/minikube-${KENV_NAME}/config"
         echo "kenv: minikube create ${KENV_NAME} created" >&2
         exit 0
     else
