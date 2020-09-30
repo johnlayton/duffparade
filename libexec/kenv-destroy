@@ -13,18 +13,14 @@ fi
 KENV_TYPE="$(kenv-machine-type ${KENV_MACHINE})"
 KENV_NAME="$(kenv-machine-name ${KENV_MACHINE})"
 
-destroy_kind() {
-  kind delete cluster --name "${1}"
-  rm -rf "${KENV_ROOT}/machines/${KENV_MACHINE}"
-}
-
 if [ $KENV_TYPE == "kind" ]
 then
   echo "kenv: kind destroy ${KENV_NAME}" >&2
-  destroy_kind "${KENV_NAME}"
+  kenv-kind-destroy "${KENV_NAME}"
 elif [ $KENV_TYPE == "minikube" ]
 then
   echo "kenv: minikube destroy ${KENV_NAME}" >&2
+  kenv-minikube-destroy "${KENV_NAME}"
 elif [ $KENV_TYPE == "microk8s" ]
 then
   echo "kenv: microk8s destroy ${KENV_NAME}" >&2
@@ -33,4 +29,6 @@ then
   echo "kenv: k3s destroy ${KENV_NAME}" >&2
 fi
 
-  echo "export KUBEMACHINE=\"${KENV_ROOT}/machines/default/machine\""
+rm -rf "${KENV_ROOT}/machines/${KENV_MACHINE}"
+
+echo "export KUBEMACHINE=\"${KENV_ROOT}/machines/default/machine\""
