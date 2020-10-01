@@ -25,6 +25,7 @@ machine_stopped() {
 machine_create() {
   local machine="$1"
   minikube start \
+      --kubernetes-version=v1.17.0 \
       --bootstrapper=kubeadm \
       --vm-driver=virtualbox \
       --memory 8192 \

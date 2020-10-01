@@ -24,17 +24,17 @@ machine_stopped() {
 
 machine_create() {
   local machine="$1"
-  # create  machine
-  multipass launch --name "${machine}" --mem 4G --disk 40G
-  # snap install microk8s
+
+  multipass launch --name "${machine}" --mem 8G --disk 40G
+  # Install microk8s
   multipass exec "${machine}" -- sudo snap install microk8s --classic
   # Authorisaction
   multipass transfer ~/.ssh/id_rsa.pub ${machine}:
-  multipass exec ${machine} -- bash -c 'sudo cat /home/ubuntu/id_rsa.pub >> /home/ubuntu/.ssh/authorized_keys'
+  multipass exec "${machine}" -- bash -c 'sudo cat /home/ubuntu/id_rsa.pub >> /home/ubuntu/.ssh/authorized_keys'
   # Networking
-  multipass exec ${machine} -- sudo iptables -P FORWARD ACCEPT
-#  multipass exec ${machine} -- bash -c 'sudo chown ubuntu:ubuntu /etc/hosts'
-#  multipass exec ${machine} -- bash -c 'sudo cat /home/ubuntu/hosts >> /etc/hosts'
+  multipass exec "${machine}" -- sudo iptables -P FORWARD ACCEPT
+#  multipass exec "${machine}" -- bash -c 'sudo chown ubuntu:ubuntu /etc/hosts'
+#  multipass exec "${machine}" -- bash -c 'sudo cat /home/ubuntu/hosts >> /etc/hosts'
   multipass exec "${machine}" -- sudo usermod -a -G microk8s ubuntu
 }
 

@@ -25,7 +25,7 @@ machine_stopped() {
 machine_start() {
   local machine="$1"
   minikube profile $machine >&2
-  minikube --profile "$machine" start >&2
+  minikube --profile "${machine}" start >&2
 }
 
 if machine_running "$KENV_NAME"; then
