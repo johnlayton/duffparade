@@ -27,7 +27,7 @@ machine_create() {
 
   multipass launch --name "${machine}" --mem 8G --disk 40G
   # Install microk8s
-  multipass exec "${machine}" -- sudo snap install microk8s --classic
+  multipass exec "${machine}" -- sudo snap install microk8s --classic --channel=1.17/stable
   # Authorisaction
   multipass transfer ~/.ssh/id_rsa.pub ${machine}:
   multipass exec "${machine}" -- bash -c 'sudo cat /home/ubuntu/id_rsa.pub >> /home/ubuntu/.ssh/authorized_keys'

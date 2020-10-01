@@ -23,6 +23,11 @@ machine_stopped() {
   [ "${state}" == "Stopped" ]
 }
 
+machine_stop() {
+  local machine="$1"
+  multipass stop "${machine}"
+}
+
 machine_delete() {
   local machine="$1"
   multipass delete "${machine}"
