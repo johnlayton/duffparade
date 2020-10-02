@@ -24,6 +24,7 @@ then
 elif [ $KENV_TYPE == "microk8s" ]
 then
   echo "kenv: microk8s destroy ${KENV_NAME}" >&2
+  kenv-microk8s-destroy "${KENV_NAME}"
 elif [ $KENV_TYPE == "k3s" ]
 then
   echo "kenv: k3s destroy ${KENV_NAME}" >&2
