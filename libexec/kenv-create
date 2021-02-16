@@ -7,7 +7,7 @@ set -e
 unset KUBECONFIG
 
 KENV_TYPE="$1"
-KENV_NAME="${2:-$(cat /dev/urandom | base64 | tr -dc '0-9A-Z' | head -c16)}"
+KENV_NAME="${2:-$(cat /dev/urandom | base64 | tr -dc 'A-Z' | head -c4)$(cat /dev/urandom | base64 | tr -dc '0-9A-Z' | head -c12)}"
 
 if [ -z "$KENV_TYPE" ] && [ -z "$KENV_NAME" ]; then
   KENV_TYPE="$(kenv-machine-type)"
