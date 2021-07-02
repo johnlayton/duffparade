@@ -29,6 +29,7 @@ machine_create() {
       --bootstrapper=kubeadm \
       --vm-driver=virtualbox \
       --memory 8192 \
+      --disk-size 50g \
       --cpus 4 \
       --profile ${machine} \
       2>&1
