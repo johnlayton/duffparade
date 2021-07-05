@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+# Summary: Start the minikube dashboard
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+KENV_NAME="$1"
+
+if [ -z "${KENV_NAME}" ]; then
+  KENV_NAME="$(kenv-machine-name)"
+fi
+
+machine_running() {
+  local machine="$1"
+  local running="$(minikube --profile ${machine} status --format "{{.Host}}" 2>&1)"
+  [ "${running}" == "Running" ]
+}
+
+machine_install_knative_serving() {
+  local machine="$1"
+
+  kubectl apply \
+    --filename https://github.com/knative/serving/releases/download/v0.24.0/serving-crds.yaml
+
+  kubectl api-resources --api-group='serving.knative.dev'
+  kubectl api-resources --api-group='messaging.knative.dev'
+  kubectl api-resources --api-group='eventing.knative.dev'
+  kubectl api-resources --api-group='sources.knative.dev'
+
+  kubectl apply \
+    --filename https://github.com/knative/serving/releases/download/v0.24.0/serving-core.yaml
+
+  kubectl rollout status deploy controller -n knative-serving
+  kubectl rollout status deploy activator -n knative-serving
+  kubectl rollout status deploy autoscaler -n knative-serving
+  kubectl rollout status deploy webhook -n knative-serving
+
+  kubectl get pods -n knative-serving
+}
+
+machine_install_knative_kourier() {
+  local machine="$1"
+
+  kubectl apply \
+    --filename https://github.com/knative/net-kourier/releases/download/v0.24.0/kourier.yaml
+
+  kubectl rollout status deploy 3scale-kourier-control -n knative-serving
+  kubectl rollout status deploy 3scale-kourier-gateway -n kourier-system
+
+  kubectl get pods --all-namespaces -l 'app in(3scale-kourier-gateway,3scale-kourier-control)'
+
+  kubectl patch configmap/config-network \
+    -n knative-serving \
+    --type merge \
+    -p '{"data":{"ingress.class":"kourier.ingress.networking.knative.dev"}}'
+
+  kubectl --namespace kourier-system get service kourier
+}
+
+machine_install_knative_eventing() {
+  local machine="$1"
+
+  kubectl apply \
+    --filename https://github.com/knative/eventing/releases/download/v0.24.0/eventing-crds.yaml
+
+  kubectl api-resources --api-group='serving.knative.dev'
+  kubectl api-resources --api-group='messaging.knative.dev'
+  kubectl api-resources --api-group='eventing.knative.dev'
+  kubectl api-resources --api-group='sources.knative.dev'
+
+  kubectl apply \
+    --filename https://github.com/knative/eventing/releases/download/v0.24.0/eventing-core.yaml \
+    --filename https://github.com/knative/eventing/releases/download/v0.24.0/in-memory-channel.yaml \
+    --filename https://github.com/knative/eventing/releases/download/v0.24.0/mt-channel-broker.yaml
+
+  kubectl rollout status deploy eventing-controller -n knative-eventing
+  kubectl rollout status deploy eventing-webhook  -n knative-eventing
+  kubectl rollout status deploy imc-controller  -n knative-eventing
+  kubectl rollout status deploy imc-dispatcher -n knative-eventing
+  kubectl rollout status deploy mt-broker-controller -n knative-eventing
+  kubectl rollout status deploy mt-broker-filter -n knative-eventing
+  kubectl rollout status deploy mt-broker-filter -n knative-eventing
+
+  kubectl get pods -n knative-eventing
+}
+
+machine_install_contour() {
+  local machine="$1"
+
+  kubectl apply \
+    --filename https://projectcontour.io/quickstart/contour.yaml
+
+  kubectl rollout status ds envoy -n projectcontour
+  kubectl rollout status deploy contour -n projectcontour
+
+  kubectl get pods -n projectcontour
+
+  cat <<EOF | kubectl apply -n kourier-system -f -
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kourier-ingress
+  namespace: kourier-system
+spec:
+  rules:
+  - http:
+     paths:
+       - path: /
+         pathType: Prefix
+         backend:
+           service:
+             name: kourier
+             port:
+               number: 80
+EOF
+}
+
+machine_install_knative() {
+  local machine="$1"
+
+  machine_install_knative_serving ${machine}
+  machine_install_knative_kourier ${machine}
+  machine_install_knative_eventing ${machine}
+}
+
+if machine_running "$KENV_NAME"; then
+    echo "kenv: machine $KENV_NAME install knative" >&2
+    machine_install_knative "$KENV_NAME" &
+    exit 0
+else
+    echo "kenv: machine $KENV_NAME is not running" >&2
+    exit 1
+fi

@@ -24,13 +24,17 @@ machine_stopped() {
 
 machine_create() {
   local machine="$1"
+#      --kubernetes-version=v1.17.0 \
   minikube start \
-      --kubernetes-version=v1.17.0 \
       --bootstrapper=kubeadm \
       --vm-driver=virtualbox \
       --memory 8192 \
       --disk-size 50g \
       --cpus 4 \
+      --addons=dashboard \
+      --addons=ingress \
+      --addons=metrics-server \
+      --addons=registry \
       --profile ${machine} \
       2>&1
 }
