@@ -2,12 +2,16 @@
 # Summary: Save a new kubernetes in docker
 
 set -e
-[ -n "$KENV_DEBUG" ] && set -x
+[ -n "${KENV_DEBUG}" ] && set -x
 
 unset KUBECONFIG
 
-KENV_TYPE="$1"
+KENV_TYPE="${1}"
 KENV_NAME="${2:-$(cat /dev/urandom | base64 | tr -dc 'A-Z' | head -c4)$(cat /dev/urandom | base64 | tr -dc '0-9A-Z' | head -c12)}"
+
+if [ "${KENV_NAME}" == "." ]; then
+  KENV_NAME="$(cat /dev/urandom | base64 | tr -dc 'A-Z' | head -c4)$(cat /dev/urandom | base64 | tr -dc '0-9A-Z' | head -c12)"
+fi
 
 if [ -z "$KENV_TYPE" ] && [ -z "$KENV_NAME" ]; then
   KENV_TYPE="$(kenv-machine-type)"
@@ -19,28 +23,28 @@ then
   mkdir "${KENV_ROOT}/machines/${KENV_TYPE}-${KENV_NAME}"
 fi
 
-if [ $KENV_TYPE == "kind" ]
-then
+case "${KENV_TYPE}" in
+kind)
   echo "kenv: kind create ${KENV_NAME}" >&2
   kenv-kind-create "${KENV_NAME}"
-elif [ $KENV_TYPE == "minikube" ]
-then
-  echo "kenv: minikube create ${KENV_NAME}" >&2
-  kenv-minikube-create "${KENV_NAME}"
-elif [ $KENV_TYPE == "microk8s" ]
-then
+  ;;
+minikube)
+  echo "kenv: minikube create ${KENV_NAME} ${@:3}" >&2
+  kenv-minikube-create "${KENV_NAME}" ${@:3}
+  ;;
+microk8s)
   echo "kenv: microk8s create ${KENV_NAME}" >&2
   kenv-microk8s-create "${KENV_NAME}"
-elif [ $KENV_TYPE == "k3s" ]
-then
+  ;;
+k3s)
   echo "kenv: k3s create ${KENV_NAME}" >&2
   kenv-k3s-create "${KENV_NAME}"
-elif [ $KENV_TYPE == "remote" ]
-then
+  ;;
+remote)
   echo "kenv: remote create" >&2
   kenv-remote-create "${KENV_NAME}"
-else
-  { echo "kenv: unknown type"
-    exit 1
-  } >&2
-fi
+  ;;
+*)
+  echo "kenv: incorrect type" >&2
+  ;;
+esac

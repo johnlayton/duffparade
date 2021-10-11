@@ -6,6 +6,9 @@ set -e
 
 KENV_NAME="$1"
 
+MEM="${2:-8g}"
+DSK="${3:-50g}"
+
 if [ -z "${KENV_NAME}" ]; then
   KENV_NAME="$(kenv-machine-name)"
 fi
@@ -24,12 +27,14 @@ machine_stopped() {
 
 machine_create() {
   local machine="$1"
+  local memory="$2"
+  local disksize="$3"
 #      --kubernetes-version=v1.17.0 \
   minikube start \
       --bootstrapper=kubeadm \
       --vm-driver=virtualbox \
-      --memory 8192 \
-      --disk-size 50g \
+      --memory ${memory} \
+      --disk-size ${disksize} \
       --cpus 4 \
       --addons=dashboard \
       --addons=ingress \
@@ -46,7 +51,7 @@ elif machine_stopped "$KENV_NAME"; then
     echo "kenv: minikube create ${KENV_NAME} already exists" >&2
     exit 0
 else
-    if machine_create "$KENV_NAME"; then
+    if machine_create "$KENV_NAME" "${MEM}" "${DSK}"; then
         kenv-machine-file-write .kenv-machine minikube-"$KENV_NAME"
         mv "${HOME}/.kube/config" "${KENV_ROOT}/machines/minikube-${KENV_NAME}/config"
         echo "kenv: minikube create ${KENV_NAME} created" >&2

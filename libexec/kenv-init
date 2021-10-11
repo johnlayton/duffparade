@@ -73,7 +73,7 @@ fi
 
 if [ ! -d "${KENV_ROOT}/machines" ]
 then
-  mkdir -p "${KENV_ROOT}/machines/original"
+  mkdir -p "${KENV_ROOT}/machines"
 fi
 
 if [ ! -d "${KENV_ROOT}/machines/original" ]

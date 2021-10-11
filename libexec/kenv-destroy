@@ -13,23 +13,25 @@ fi
 KENV_TYPE="$(kenv-machine-type ${KENV_MACHINE})"
 KENV_NAME="$(kenv-machine-name ${KENV_MACHINE})"
 
-if [ $KENV_TYPE == "kind" ]
-then
+
+case "${KENV_TYPE}" in
+kind)
   echo "kenv: kind destroy ${KENV_NAME}" >&2
   kenv-kind-destroy "${KENV_NAME}"
-elif [ $KENV_TYPE == "minikube" ]
-then
+  ;;
+minikube)
   echo "kenv: minikube destroy ${KENV_NAME}" >&2
   kenv-minikube-destroy "${KENV_NAME}"
-elif [ $KENV_TYPE == "microk8s" ]
-then
+  ;;
+microk8s)
   echo "kenv: microk8s destroy ${KENV_NAME}" >&2
   kenv-microk8s-destroy "${KENV_NAME}"
-elif [ $KENV_TYPE == "k3s" ]
-then
-  echo "kenv: k3s destroy ${KENV_NAME}" >&2
-fi
+  ;;
+*)
+  echo "kenv: incorrect type ${KENV_NAME}" >&2
+  ;;
+esac
 
 rm -rf "${KENV_ROOT}/machines/${KENV_MACHINE}"
 
-echo "export KUBEMACHINE=\"${KENV_ROOT}/machines/default/machine\""
+#echo "export KUBEMACHINE=\"${KENV_ROOT}/machines/default/machine\""
