@@ -40,6 +40,10 @@ k3s)
   echo "kenv: k3s create ${KENV_NAME}" >&2
   kenv-k3s-create "${KENV_NAME}"
   ;;
+k3d)
+  echo "kenv: k3d create ${KENV_NAME}" >&2
+  kenv-k3d-create "${KENV_NAME}"
+  ;;
 remote)
   echo "kenv: remote create" >&2
   kenv-remote-create "${KENV_NAME}"

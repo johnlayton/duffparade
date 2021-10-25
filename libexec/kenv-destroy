@@ -23,6 +23,10 @@ minikube)
   echo "kenv: minikube destroy ${KENV_NAME}" >&2
   kenv-minikube-destroy "${KENV_NAME}"
   ;;
+k3d)
+  echo "kenv: k3d destroy ${KENV_NAME}" >&2
+  kenv-k3d-destroy "${KENV_NAME}"
+  ;;
 microk8s)
   echo "kenv: microk8s destroy ${KENV_NAME}" >&2
   kenv-microk8s-destroy "${KENV_NAME}"

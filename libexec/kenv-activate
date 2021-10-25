@@ -29,6 +29,10 @@ elif [ $KENV_TYPE == "k3s" ]
 then
   echo "kenv: k3s activate ${KENV_NAME}" >&2
   kenv-k3s-activate "${KENV_NAME}"
+elif [ $KENV_TYPE == "k3d" ]
+then
+  echo "kenv: k3d activate ${KENV_NAME}" >&2
+  kenv-k3d-activate "${KENV_NAME}"
 elif [ $KENV_TYPE == "remote" ]
 then
   echo "kenv: remote activate ${KENV_NAME}" >&2

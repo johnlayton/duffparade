@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Summary: Destroy the minikube
+
+set -e
+[ -n "$KENV_DEBUG" ] && set -x
+
+KENV_NAME="$1"
+
+if [ -z "${KENV_NAME}" ]; then
+  KENV_NAME="$(kenv-machine-name)"
+fi
+
+machine_running() {
+  local machine="$1"
+  local state=$(k3d cluster list -o json | jq --arg machine "${machine}" --raw-output '.[] | select(.name == $machine) | .nodes[] | select(.role == "server") | .State.Status')
+  [ "${state}" == "running" ]
+}
+
+machine_stop() {
+  local machine="$1"
+  k3d cluster stop ${machine}
+}
+
+machine_delete() {
+  local machine="$1"
+  k3d cluster delete ${machine}
+}
+
+if machine_running "$KENV_NAME"; then
+    echo "kenv: machine $KENV_NAME stop" >&2
+    machine_stop "$KENV_NAME" && \
+      machine_delete "$KENV_NAME"
+    exit 0
+else
+    echo "kenv: machine $KENV_NAME is not running" >&2
+    machine_delete "$KENV_NAME"
+    exit 0
+fi
