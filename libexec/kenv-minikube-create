@@ -30,9 +30,10 @@ machine_create() {
   local memory="$2"
   local disksize="$3"
 #      --kubernetes-version=v1.17.0 \
+#      --vm-driver=virtualbox \
   minikube start \
       --bootstrapper=kubeadm \
-      --vm-driver=virtualbox \
+      --vm-driver=docker \
       --memory ${memory} \
       --disk-size ${disksize} \
       --cpus 4 \
