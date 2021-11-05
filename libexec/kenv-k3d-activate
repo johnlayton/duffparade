@@ -32,6 +32,7 @@ if machine_running "$KENV_NAME"; then
     exit 0
 elif machine_stopped "$KENV_NAME"; then
     if machine_start "$KENV_NAME"; then
+        PORT=$(curl --unix-socket /var/run/docker.sock http://localhost/containers/json | jq -r '.[] | select (.Labels."k3d.role" == "registry") | .Ports[].PublicPort')
         echo "kenv: k3d activate ${KENV_NAME} started" >&2
         echo "export DOCKER_TLS_VERIFY="
         echo "export DOCKER_HOST="

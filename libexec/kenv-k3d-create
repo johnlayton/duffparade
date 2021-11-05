@@ -24,7 +24,7 @@ machine_stopped() {
 
 machine_create() {
   local machine="$1"
-  k3d cluster create ${machine}
+  k3d cluster create ${machine} --registry-create k3d-${machine}-registry
 }
 
 if machine_running "${KENV_NAME}"; then
