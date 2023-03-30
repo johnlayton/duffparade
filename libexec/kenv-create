@@ -7,10 +7,10 @@ set -e
 unset KUBECONFIG
 
 KENV_TYPE="${1}"
-KENV_NAME="${2:-$(cat /dev/urandom | base64 | tr -dc 'A-Z' | head -c4)$(cat /dev/urandom | base64 | tr -dc '0-9A-Z' | head -c12)}"
+KENV_NAME="${2:-$(dd if=/dev/urandom bs=256 count=1 status=none | base64 | tr -dc 'A-Z' | head -c4)$(dd if=/dev/urandom bs=256 count=1 status=none | base64 | tr -dc '0-9A-Z' | head -c12)}"
 
 if [ "${KENV_NAME}" == "." ]; then
-  KENV_NAME="$(cat /dev/urandom | base64 | tr -dc 'A-Z' | head -c4)$(cat /dev/urandom | base64 | tr -dc '0-9A-Z' | head -c12)"
+  KENV_NAME="$(dd if=/dev/urandom bs=256 count=1 status=none | base64 | tr -dc 'A-Z' | head -c4)$(dd if=/dev/urandom bs=256 count=1 status=none | base64 | tr -dc '0-9A-Z' | head -c12)"
 fi
 
 if [ -z "$KENV_TYPE" ] && [ -z "$KENV_NAME" ]; then
